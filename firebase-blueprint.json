@@ -1,0 +1,112 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "AVANYX Store user profile with role, verified status, and security permissions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "displayName": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "bio": { "type": "string" },
+        "role": { "type": "string", "enum": ["USER", "DEVELOPER", "STUDENT", "ADMIN"] },
+        "developerStatus": { "type": "string", "enum": ["NONE", "PENDING", "VERIFIED", "REJECTED", "SUSPENDED"] },
+        "studentStatus": { "type": "string", "enum": ["NONE", "PENDING", "VERIFIED", "REJECTED"] },
+        "adminStatus": { "type": "string", "enum": ["NONE", "ACTIVE", "SUSPENDED"] },
+        "verificationBadge": { "type": "string", "enum": ["NONE", "VERIFIED", "OFFICIAL", "STUDENT_VERIFIED"] },
+        "developerKey": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "SUSPENDED", "DISABLED"] }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "App": {
+      "title": "App",
+      "description": "Store application item verified and published or under moderation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "developer": { "type": "string" },
+        "developerUid": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["PUBLISHED", "PENDING_REVIEW", "REJECTED", "ARCHIVED"] },
+        "packageName": { "type": "string" },
+        "downloadUrl": { "type": "string" },
+        "checksumSha256": { "type": "string" },
+        "version": { "type": "string" }
+      },
+      "required": ["id", "name", "developerUid", "status"]
+    },
+    "DeveloperRequest": {
+      "title": "DeveloperRequest",
+      "description": "Developer verification request for publishing applications.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "userName": { "type": "string" },
+        "organizationName": { "type": "string" },
+        "websiteUrl": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED", "SUSPENDED"] }
+      },
+      "required": ["userId", "status"]
+    },
+    "StudentRequest": {
+      "title": "StudentRequest",
+      "description": "Student verification request for educational verified badge.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "userName": { "type": "string" },
+        "institutionName": { "type": "string" },
+        "studentIdNumber": { "type": "string" },
+        "graduationYear": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] }
+      },
+      "required": ["userId", "status"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable security log of administrative actions and role updates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "adminEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "targetId": { "type": "string" },
+        "details": { "type": "string" }
+      },
+      "required": ["action", "targetId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles with authoritative roles and security statuses"
+    },
+    "/apps/{appId}": {
+      "schema": { "$ref": "#/entities/App" },
+      "description": "Store applications catalog"
+    },
+    "/developer_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/DeveloperRequest" },
+      "description": "Developer verification queue applications"
+    },
+    "/student_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/StudentRequest" },
+      "description": "Student verification queue applications"
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Security audit logs for admin actions"
+    }
+  }
+}
