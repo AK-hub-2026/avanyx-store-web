@@ -1,0 +1,6 @@
+{
+  "name": "AVANYX Store",
+  "description": "AVANYX Store - Official app marketplace with native Android client, Store Profile, Developer Console, Student Publishing, AI verification pipeline, role-gated admin tools, and real-time Firestore synchronization.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

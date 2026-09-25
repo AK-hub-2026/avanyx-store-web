@@ -1,0 +1,44 @@
+# AVANYX Store - LLMs & AI Assistant Context Summary
+> Official Secure Android App Marketplace & Developer Publishing Hub
+
+## System Information for AI Search & Agentic Browsing
+- Platform Name: AVANYX Store
+- Platform Purpose: Secure Android App Marketplace, APK Distribution, Developer Console, Student Publishing, AI Security Pipeline
+- Canonical Base URL: https://avanyxstore.org
+- App Store Route: https://avanyxstore.org/store
+- Documentation & About Route: https://avanyxstore.org/
+- Sitemap Location: https://avanyxstore.org/sitemap.xml
+- Robots Policy: https://avanyxstore.org/robots.txt
+- Security Policy: https://avanyxstore.org/security.txt
+
+## Primary Web Navigation Landmarks
+- `GET /` : Documentation Hub, About AVANYX, CyberShield Security Pipeline breakdown, FAQ Directory
+- `GET /store` : Primary App Store Marketplace listing games, utilities, productivity software
+- `GET /apps` : Filtered directory for productivity and utility Android applications
+- `GET /games` : Filtered directory for high-FPS Android games (e.g., Bomb Rush 3D)
+- `GET /app/:appId` : Dedicated app details view with version history, SHA-256 checksums, and clean malware audit
+- `GET /developer` : AVANYX Developer Studio Console for app submission, version management, and analytics
+- `GET /student` : Student Developer Portal with free hosting, academic sandbox keys, and educational resources
+- `GET /security.txt` : RFC 9116 vulnerability disclosure policy
+- `GET /llms.txt` : Agentic search discovery and LLM contextual grounding index
+
+## Core Architectural Specifications
+1. **CyberShield 4-Tier AI Security Pipeline**:
+   - Tier 1: SHA-256 Hash Checksum & Signature Validation
+   - Tier 2: Static Analysis & Permission Risk Profiling
+   - Tier 3: Dynamic Sandbox Execution & Malware Scanning
+   - Tier 4: Gemini AI Content & Security Verification
+2. **Developer Studio Console**: 0% commission platform for Android developers to publish APK binaries, manage release channels, view real-time download telemetry, and inspect crash reports.
+3. **Student Developer Program**: Verified Class 10+ and university students receive 100% free developer verification, student badge verification, and academic sandbox access.
+4. **AVANYX Identity**: Modern OAuth 2.0 / OIDC identity framework with PKCE authentication.
+
+## Flagship Verified Software
+- **Bomb Rush 3D**: High-FPS 3D action mobile game.
+- **AVANYX AutoPDF**: Automated document scanning, PDF compilation, and OCR text recognition.
+- **AVANYX Store Client**: Native Android client for background downloads and store synchronization.
+
+## Official Contact & Security Disclosure
+- Security Contact: security@avanyx.io
+- Developer Support: support@avanyx.io
+- Technical Credits: https://avanyxstore.org/humans.txt
+

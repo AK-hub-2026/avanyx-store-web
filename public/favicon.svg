@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="avxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9333EA"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <filter id="avxShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#7C3AED" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#avxGrad)" filter="url(#avxShadow)"/>
+  <rect width="512" height="512" rx="128" fill="url(#avxGrad)" fill-opacity="0.95"/>
+  <path d="M 256 128 L 388 384 L 324 384 L 298 330 L 214 330 L 188 384 L 124 384 Z M 256 220 L 228 280 L 284 280 Z" fill="#FFFFFF" fill-rule="evenodd"/>
+</svg>
