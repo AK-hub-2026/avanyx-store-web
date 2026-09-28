@@ -33,10 +33,14 @@ import { StorageUsageTab } from '../components/developer/StorageUsageTab';
 import { TestingTracksTab } from '../components/developer/TestingTracksTab';
 import { MediaStudioTab } from '../components/developer/MediaStudioTab';
 import { DeveloperProfileTab } from '../components/developer/DeveloperProfileTab';
+import { DeveloperBillingTab } from '../components/developer/DeveloperBillingTab';
 import { DeveloperPromotionTab } from '../components/developer/DeveloperPromotionTab';
 import { PolicyCenterTab } from '../components/developer/PolicyCenterTab';
 import { ConsoleSettingsTab } from '../components/developer/ConsoleSettingsTab';
 import { ComingSoonTab } from '../components/developer/ComingSoonTab';
+import { ApiCenterTab } from '../components/common/ApiCenterTab';
+import { PayoutCenterTab } from '../components/common/PayoutCenterTab';
+import { PurchaseHistoryScreen } from './PurchaseHistoryScreen';
 import { Layers, Sparkles, ShieldCheck, Clock, BadgeCheck, XCircle, FileText, KeyRound, Copy, Check, ChevronRight, AlertCircle } from 'lucide-react';
 
 interface DeveloperConsoleScreenProps {
@@ -441,7 +445,7 @@ export const DeveloperConsoleScreen: React.FC<DeveloperConsoleScreenProps> = ({
               />
             )}
 
-            {activeTab === 'ALL_APPS' && (
+            {(activeTab === 'ALL_APPS' || activeTab === 'MY_APPS') && (
               <AllAppsTab
                 developerApps={developerApps}
                 user={user}
@@ -451,12 +455,39 @@ export const DeveloperConsoleScreen: React.FC<DeveloperConsoleScreenProps> = ({
               />
             )}
 
-            {activeTab === 'SUBMIT_APP' && (
+            {(activeTab === 'BILLING' || activeTab === 'BILLING_CENTER' || activeTab === 'PRODUCTS_SKUS' || activeTab === 'FINANCIAL_REPORTS') && (
+              <DeveloperBillingTab />
+            )}
+
+            {(activeTab === 'SUBMIT_APP' || activeTab === 'APK_DISTRIBUTION') && (
               <SubmitAppTab
                 user={user}
                 activeUid={activeUid}
                 onSuccessPublished={() => setActiveTab('ALL_APPS')}
               />
+            )}
+
+            {activeTab === 'PAYOUT_CENTER' && (
+              <PayoutCenterTab
+                creatorUid={activeUid}
+                creatorName={user.name || 'Developer'}
+                creatorEmail={user.email}
+                creatorType="DEVELOPER"
+              />
+            )}
+
+            {activeTab === 'API_CENTER' && (
+              <ApiCenterTab
+                creatorUid={activeUid}
+                creatorName={user.name || 'Developer'}
+                creatorType="DEVELOPER"
+              />
+            )}
+
+            {activeTab === 'PURCHASE_HISTORY' && (
+              <div className="p-4 rounded-3xl bg-[#14151C] border border-white/10">
+                <PurchaseHistoryScreen />
+              </div>
             )}
 
             {activeTab === 'RELEASES' && (
@@ -484,7 +515,7 @@ export const DeveloperConsoleScreen: React.FC<DeveloperConsoleScreenProps> = ({
               />
             )}
 
-            {(activeTab === 'ANALYTICS' || activeTab === 'DOWNLOAD_ANALYTICS') && (
+            {(activeTab === 'ANALYTICS' || activeTab === 'DOWNLOAD_ANALYTICS' || activeTab === 'REVENUE_ANALYTICS') && (
               <RealtimeAnalyticsHub
                 developerApps={developerApps}
                 activeApp={activeApp}
@@ -559,7 +590,7 @@ export const DeveloperConsoleScreen: React.FC<DeveloperConsoleScreenProps> = ({
               />
             )}
 
-            {activeTab === 'NOTIFICATION_CENTER' && (
+            {(activeTab === 'NOTIFICATION_CENTER' || activeTab === 'NOTIFICATIONS') && (
               <NotificationCenterTab />
             )}
 
@@ -598,7 +629,7 @@ export const DeveloperConsoleScreen: React.FC<DeveloperConsoleScreenProps> = ({
               />
             )}
 
-            {activeTab === 'PROMOTION_MANAGER' && (
+            {(activeTab === 'PROMOTION_MANAGER' || activeTab === 'PROMOTION_CENTER') && (
               <DeveloperPromotionTab
                 developerUid={activeUid}
                 developerApps={developerApps}
@@ -613,7 +644,7 @@ export const DeveloperConsoleScreen: React.FC<DeveloperConsoleScreenProps> = ({
               <PolicyCenterTab />
             )}
 
-            {activeTab === 'CONSOLE_SETTINGS' && (
+            {(activeTab === 'CONSOLE_SETTINGS' || activeTab === 'SETTINGS') && (
               <ConsoleSettingsTab
                 user={user}
               />

@@ -43,7 +43,8 @@ import {
   ChevronRight,
   Key,
   FileCheck2,
-  TrendingUp
+  TrendingUp,
+  Download
 } from 'lucide-react';
 import { AdminPromotionManager } from '../components/admin/AdminPromotionManager';
 import { AdminDashboardOverview } from '../components/admin/AdminDashboardOverview';
@@ -93,16 +94,19 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
     | 'OVERVIEW'
     | 'APPS'
     | 'VERIFICATIONS'
-    | 'PAYMENT_REVIEW'
-    | 'PAYMENT_CONSOLE'
-    | 'PAYMENT_ANALYTICS'
     | 'DEVELOPERS'
-    | 'USERS'
+    | 'STUDENTS'
+    | 'PAYMENT_CONSOLE'
+    | 'PAYMENT_REVIEW'
+    | 'PAYMENT_ANALYTICS'
     | 'PROMOTIONS'
     | 'CATEGORIES'
-    | 'SYSTEM_HEALTH'
+    | 'DOWNLOADS_ANALYTICS'
     | 'AUDIT'
+    | 'SYSTEM_HEALTH'
     | 'NOTIFICATIONS'
+    | 'SETTINGS'
+    | 'USERS'
   >('OVERVIEW');
   const [verificationSubQueue, setVerificationSubQueue] = useState<'ALL' | 'DEVELOPER' | 'STUDENT'>('ALL');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
@@ -472,41 +476,21 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
             </div>
           </div>
 
-          {/* Navigation Items */}
+          {/* Navigation Items (PART A: Admin Console Sidebar) */}
           <nav className="space-y-1">
             <button
               id="admin-nav-overview"
               onClick={() => setActiveTab('OVERVIEW')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'OVERVIEW'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <LayoutDashboard className="w-4 h-4" />
-                <span>Overview</span>
+                <span>Dashboard</span>
               </div>
-            </button>
-
-            <button
-              id="admin-nav-apps"
-              onClick={() => setActiveTab('APPS')}
-              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
-                activeTab === 'APPS'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Package className="w-4 h-4" />
-                <span>App Moderation</span>
-              </div>
-              {pendingAppCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-black">
-                  {pendingAppCount}
-                </span>
-              )}
             </button>
 
             <button
@@ -514,8 +498,8 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
               onClick={() => setActiveTab('VERIFICATIONS')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'VERIFICATIONS'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -530,12 +514,65 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
             </button>
 
             <button
+              id="admin-nav-developers"
+              onClick={() => setActiveTab('DEVELOPERS')}
+              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
+                activeTab === 'DEVELOPERS'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Terminal className="w-4 h-4" />
+                <span>Developer Management</span>
+              </div>
+            </button>
+
+            <button
+              id="admin-nav-students"
+              onClick={() => setActiveTab('STUDENTS')}
+              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
+                activeTab === 'STUDENTS'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <GraduationCap className="w-4 h-4" />
+                <span>Student Management</span>
+              </div>
+              {pendingStuCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-500 text-white font-bold">
+                  {pendingStuCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              id="admin-nav-payment-console"
+              onClick={() => setActiveTab('PAYMENT_CONSOLE')}
+              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
+                activeTab === 'PAYMENT_CONSOLE'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <CreditCard className="w-4 h-4" />
+                <span>Payment Console</span>
+              </div>
+              <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-emerald-500/20 text-emerald-300 font-extrabold">
+                9 TABS
+              </span>
+            </button>
+
+            <button
               id="admin-nav-payment-review"
               onClick={() => setActiveTab('PAYMENT_REVIEW')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'PAYMENT_REVIEW'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -550,62 +587,17 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
             </button>
 
             <button
-              id="admin-nav-payment-console"
-              onClick={() => setActiveTab('PAYMENT_CONSOLE')}
-              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
-                activeTab === 'PAYMENT_CONSOLE'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <CreditCard className="w-4 h-4" />
-                <span>Payment Console</span>
-              </div>
-            </button>
-
-            <button
               id="admin-nav-payment-analytics"
               onClick={() => setActiveTab('PAYMENT_ANALYTICS')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'PAYMENT_ANALYTICS'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <TrendingUp className="w-4 h-4 text-emerald-400" />
-                <span>Revenue Analytics</span>
-              </div>
-            </button>
-
-            <button
-              id="admin-nav-developers"
-              onClick={() => setActiveTab('DEVELOPERS')}
-              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
-                activeTab === 'DEVELOPERS'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Terminal className="w-4 h-4" />
-                <span>Developers</span>
-              </div>
-            </button>
-
-            <button
-              id="admin-nav-users"
-              onClick={() => setActiveTab('USERS')}
-              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
-                activeTab === 'USERS'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Users className="w-4 h-4" />
-                <span>User Governance</span>
+                <span>Payment Analytics</span>
               </div>
             </button>
 
@@ -614,8 +606,8 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
               onClick={() => setActiveTab('PROMOTIONS')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'PROMOTIONS'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -629,31 +621,31 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
               onClick={() => setActiveTab('CATEGORIES')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'CATEGORIES'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <FolderPlus className="w-4 h-4" />
                 <span>Category Manager</span>
               </div>
-              <span className="text-[10px] font-mono text-[#49454F] dark:text-[#CAC4D0]">
+              <span className="text-[10px] font-mono text-zinc-400">
                 {categoriesList.length}
               </span>
             </button>
 
             <button
-              id="admin-nav-health"
-              onClick={() => setActiveTab('SYSTEM_HEALTH')}
+              id="admin-nav-downloads"
+              onClick={() => setActiveTab('DOWNLOADS_ANALYTICS')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
-                activeTab === 'SYSTEM_HEALTH'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                activeTab === 'DOWNLOADS_ANALYTICS'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Activity className="w-4 h-4" />
-                <span>System Health</span>
+                <Download className="w-4 h-4 text-cyan-400" />
+                <span>Downloads Analytics</span>
               </div>
             </button>
 
@@ -662,8 +654,8 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
               onClick={() => setActiveTab('AUDIT')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'AUDIT'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -673,23 +665,53 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
             </button>
 
             <button
+              id="admin-nav-health"
+              onClick={() => setActiveTab('SYSTEM_HEALTH')}
+              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
+                activeTab === 'SYSTEM_HEALTH'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Activity className="w-4 h-4" />
+                <span>System Health</span>
+              </div>
+            </button>
+
+            <button
               id="admin-nav-notifications"
               onClick={() => setActiveTab('NOTIFICATIONS')}
               className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
                 activeTab === 'NOTIFICATIONS'
-                  ? 'bg-[#6750A4] text-white shadow-sm'
-                  : 'text-[#49454F] dark:text-[#CAC4D0] hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Bell className="w-4 h-4" />
-                <span>Admin Alerts</span>
+                <span>Notifications</span>
               </div>
               {adminNotifications.length > 0 && (
                 <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-500 text-white font-bold">
                   {adminNotifications.length}
                 </span>
               )}
+            </button>
+
+            <button
+              id="admin-nav-settings"
+              onClick={() => setActiveTab('SETTINGS')}
+              className={`w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between ${
+                activeTab === 'SETTINGS'
+                  ? 'bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white shadow-lg shadow-[#9333EA]/30 font-black'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Key className="w-4 h-4" />
+                <span>Settings</span>
+              </div>
             </button>
           </nav>
         </div>
@@ -1573,6 +1595,207 @@ export const AdminConsoleScreen: React.FC<AdminConsoleScreenProps> = ({ onExit }
                 No security audit logs recorded yet.
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: STUDENT MANAGEMENT */}
+      {activeTab === 'STUDENTS' && (
+        <div className="space-y-4">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 flex-1">
+              <Search className="w-4 h-4 text-[#49454F] dark:text-[#CAC4D0]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search students by name, email, institution, or student ID..."
+                className="bg-transparent text-xs w-full text-[#1D1B20] dark:text-[#E6E1E5] focus:outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-zinc-400">
+              <span className="px-2.5 py-1 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                {usersList.filter(u => u.role === 'STUDENT' || u.role === 'VERIFIED_STUDENT' || u.studentStatus === 'VERIFIED').length} Verified Scholars
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-[#1E1F23] rounded-3xl border border-black/5 dark:border-white/5 overflow-hidden divide-y divide-black/5 dark:divide-white/5 shadow-sm">
+            {usersList
+              .filter(
+                (u) =>
+                  u.role === 'STUDENT' ||
+                  u.role === 'VERIFIED_STUDENT' ||
+                  u.studentStatus === 'VERIFIED' ||
+                  u.studentDetails ||
+                  requests.some(r => r.type === 'STUDENT' && r.userId === u.id)
+              )
+              .filter(
+                (u) =>
+                  !searchQuery ||
+                  u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  (u.studentDetails?.institutionName && u.studentDetails.institutionName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                  u.id.includes(searchQuery)
+              )
+              .map((stu) => {
+                const pendingReq = requests.find(r => r.type === 'STUDENT' && r.userId === stu.id);
+                return (
+                  <div
+                    key={stu.id}
+                    className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <img
+                        src={stu.avatarUrl || `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(stu.name || 'student')}`}
+                        alt={stu.name}
+                        className="w-12 h-12 rounded-2xl object-cover ring-2 ring-blue-500/20"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-extrabold text-sm text-[#1D1B20] dark:text-[#E6E1E5]">
+                            {stu.name}
+                          </h4>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-500/15 text-blue-600 dark:text-blue-400">
+                            {stu.studentStatus === 'VERIFIED' ? 'STAGE 1 VERIFIED' : stu.studentStatus || 'STUDENT'}
+                          </span>
+                          {stu.studentStage2Verified && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#EC4899]/15 text-[#EC4899] border border-[#EC4899]/30">
+                              STAGE 2 COMMERCIAL
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-[#49454F] dark:text-[#CAC4D0]">
+                          {stu.email} • Institution: <strong className="text-[#1D1B20] dark:text-[#E6E1E5]">{stu.studentDetails?.institutionName || 'Accredited Academic Institution'}</strong>
+                        </p>
+                        {stu.studentDetails?.major && (
+                          <p className="text-[11px] text-zinc-500 font-medium">
+                            Major: {stu.studentDetails.major} • Grad Year: {stu.studentDetails.graduationYear || '2026'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {pendingReq && (
+                        <button
+                          onClick={() => {
+                            setSelectedReq(pendingReq);
+                            setActionType(null);
+                            setReviewerNotes(pendingReq.reviewerNotes || '');
+                          }}
+                          className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5"
+                        >
+                          <FileCheck2 className="w-3.5 h-3.5" />
+                          <span>Review Request</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setEditingUser(stu);
+                          setTargetRole(stu.role);
+                          setTargetBadge(stu.verificationBadge || 'NONE');
+                        }}
+                        className="px-3.5 py-2 rounded-xl bg-[#F3EDF7] dark:bg-[#25262B] text-xs font-bold text-[#1D1B20] dark:text-[#E6E1E5] hover:bg-[#E8DEF8] dark:hover:bg-[#34323B] transition-all"
+                      >
+                        Manage Student
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: DOWNLOADS ANALYTICS */}
+      {activeTab === 'DOWNLOADS_ANALYTICS' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 space-y-1">
+              <div className="text-xs font-bold text-zinc-400">Total Catalog Applications</div>
+              <div className="text-2xl font-black text-[#1D1B20] dark:text-white">{appsList.length}</div>
+            </div>
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 space-y-1">
+              <div className="text-xs font-bold text-zinc-400">Aggregate Store Installs</div>
+              <div className="text-2xl font-black text-emerald-500">
+                {appsList.reduce((acc, app) => acc + (typeof app.downloads === 'number' ? app.downloads : parseInt(String(app.downloads || '0').replace(/[^0-9]/g, '')) || 0), 0).toLocaleString()}
+              </div>
+            </div>
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 space-y-1">
+              <div className="text-xs font-bold text-zinc-400">Security Clean Compliance</div>
+              <div className="text-2xl font-black text-cyan-400">100%</div>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 space-y-4">
+            <h3 className="text-base font-black text-[#1D1B20] dark:text-white flex items-center gap-2">
+              <Download className="w-5 h-5 text-cyan-400" />
+              <span>Top Installed Applications Across AVANYX Store</span>
+            </h3>
+
+            <div className="divide-y divide-black/5 dark:divide-white/5">
+              {[...appsList]
+                .sort((a, b) => {
+                  const aVal = typeof a.downloads === 'number' ? a.downloads : parseInt(String(a.downloads || '0').replace(/[^0-9]/g, '')) || 0;
+                  const bVal = typeof b.downloads === 'number' ? b.downloads : parseInt(String(b.downloads || '0').replace(/[^0-9]/g, '')) || 0;
+                  return bVal - aVal;
+                })
+                .slice(0, 10)
+                .map((app, idx) => (
+                  <div key={app.id} className="py-3.5 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 text-center font-black text-xs text-zinc-400">#{idx + 1}</span>
+                      <img src={app.iconUrl} alt={app.name} className="w-10 h-10 rounded-xl object-cover" />
+                      <div>
+                        <div className="font-extrabold text-xs text-[#1D1B20] dark:text-white">{app.name}</div>
+                        <div className="text-[11px] text-zinc-400">{app.packageName} • {app.developer}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-black text-xs text-emerald-400">{app.downloads || 0} Installs</div>
+                      <div className="text-[10px] text-zinc-400 font-mono">v{app.version || '1.0.0'}</div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: SETTINGS */}
+      {activeTab === 'SETTINGS' && (
+        <div className="space-y-6">
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 space-y-5">
+            <div>
+              <h3 className="text-base font-black text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Key className="w-5 h-5 text-[#9333EA]" />
+                <span>AVANYX Platform & System Settings</span>
+              </h3>
+              <p className="text-xs text-zinc-400 mt-1">Authoritative configuration for store security and verification.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="p-4 rounded-2xl bg-black/5 dark:bg-black/30 border border-black/5 dark:border-white/5 space-y-2">
+                <div className="text-xs font-bold text-white">Dynamic UPI QR Authority</div>
+                <p className="text-[11px] text-zinc-400">Configured in Firestore collection: <code>payment_settings/global</code></p>
+                <button
+                  onClick={() => setActiveTab('PAYMENT_CONSOLE')}
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#9333EA] to-[#EC4899] text-white font-extrabold text-xs shadow-md transition active:scale-95"
+                >
+                  Configure Dynamic UPI
+                </button>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-black/5 dark:bg-black/30 border border-black/5 dark:border-white/5 space-y-2">
+                <div className="text-xs font-bold text-white">Security Scan Policy</div>
+                <p className="text-[11px] text-zinc-400">Enforce 100% SHA-256 binary validation on all APK submissions.</p>
+                <span className="inline-block px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 font-extrabold text-[11px]">
+                  Enforced (Zero-Trust)
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -10,9 +10,12 @@ import {
   FeaturedBanner,
   DeveloperProfile,
   DeveloperDetails,
-  StudentDetails
+  StudentDetails,
+  BillingPurchaseRequest
 } from '../types';
 import { INITIAL_NOTIFICATIONS, GUEST_USER } from '../data/mockData';
+import { AVANYX } from '../sdk/avanyxBillingSdk';
+import { PurchasePopupModal } from '../components/billing/PurchasePopupModal';
 import {
   auth,
   googleProvider,
@@ -63,6 +66,12 @@ import {
   ensurePaymentSettingsAndCoupons
 } from '../services/firestoreService';
 import { registerCurrentDeviceSession } from '../services/identityService';
+import {
+  startBackgroundDownload,
+  pauseBackgroundDownload,
+  cancelBackgroundDownload
+} from '../services/downloadManagerService';
+import { hasUserPurchasedApp } from '../services/billingService';
 import type { User as FirebaseUser } from 'firebase/auth';
 
 /**
@@ -188,6 +197,11 @@ interface StoreContextType {
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   deleteNotification: (id: string) => void;
+
+  // Billing API
+  activeBillingRequest: BillingPurchaseRequest | null;
+  openBillingPurchase: (req: BillingPurchaseRequest) => void;
+  closeBillingPurchase: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -219,6 +233,41 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   const [downloads, setDownloads] = useState<DownloadTask[]>([]);
+  
+  // AVANYX Billing API State
+  const [activeBillingRequest, setActiveBillingRequest] = useState<BillingPurchaseRequest | null>(null);
+
+  const openBillingPurchase = useCallback((req: BillingPurchaseRequest) => {
+    setActiveBillingRequest(req);
+  }, []);
+
+  const closeBillingPurchase = useCallback(() => {
+    setActiveBillingRequest(null);
+  }, []);
+
+  // Hook AVANYX Billing SDK to this Store context instance
+  useEffect(() => {
+    AVANYX._registerPurchaseModalHandler((req) => {
+      openBillingPurchase(req);
+    });
+
+    const handleWindowBillingEvent = (e: any) => {
+      if (e.detail) {
+        openBillingPurchase(e.detail);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('OPEN_AVANYX_PURCHASE_MODAL', handleWindowBillingEvent);
+    }
+
+    return () => {
+      AVANYX._unregisterPurchaseModalHandler();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('OPEN_AVANYX_PURCHASE_MODAL', handleWindowBillingEvent);
+      }
+    };
+  }, [openBillingPurchase]);
   
   // Firebase Auth State
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
@@ -1283,57 +1332,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [darkMode]);
 
-  // Download simulation timer
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDownloads((prev) =>
-        prev.map((task) => {
-          if (task.status !== 'DOWNLOADING') return task;
-
-          const increment = Math.floor(Math.random() * 15) + 10;
-          const newProgress = Math.min(100, task.progress + increment);
-
-          if (newProgress === 100) {
-            // Mark app installed in apps list
-            setApps((prevApps) =>
-              prevApps.map((a) => (a.id === task.appId ? { ...a, isInstalled: true } : a))
-            );
-
-            // Add notification
-            setNotifications((prevNotifs) => [
-              {
-                id: 'notif_inst_' + Date.now(),
-                title: 'Installation Complete',
-                message: `${task.appName} was verified and installed successfully.`,
-                timestamp: new Date().toISOString(),
-                isRead: false,
-                type: 'SYSTEM',
-                deepLinkAppId: task.appId,
-              },
-              ...prevNotifs,
-            ]);
-
-            return {
-              ...task,
-              progress: 100,
-              status: 'INSTALLED',
-              speed: '0 MB/s',
-            };
-          }
-
-          return {
-            ...task,
-            progress: newProgress,
-            downloadedBytes: Math.floor((task.totalBytes * newProgress) / 100),
-            speed: `${(Math.random() * 5 + 8).toFixed(1)} MB/s`,
-          };
-        })
-      );
-    }, 800);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const openAppDetails = async (appId: string) => {
     const target = apps.find((a) => a.id === appId || a.packageName === appId);
     if (target) {
@@ -1402,71 +1400,119 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const downloadApp = (app: StoreApp) => {
-    if (downloads.some((d) => d.appId === app.id && d.status === 'DOWNLOADING')) {
+  // Real native background download execution (v3.7.2 PART A)
+  const executeActualDownload = (app: StoreApp) => {
+    if (downloads.some((d) => d.appId === app.id && (d.status === 'DOWNLOADING' || d.status === 'PREPARING'))) {
       return;
     }
 
-    // Trigger direct APK download from GitHub Release / source if available
-    if (app.downloadUrl && typeof window !== 'undefined') {
-      try {
-        const link = document.createElement('a');
-        link.href = app.downloadUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.setAttribute('download', `${app.packageName || app.name || 'app'}.apk`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (err) {
-        console.warn('[StoreContext] Download trigger notice:', err);
+    startBackgroundDownload(
+      app,
+      user?.id,
+      (taskUpdate) => {
+        setDownloads((prev) => {
+          const exists = prev.some((d) => d.appId === taskUpdate.appId);
+          if (exists) {
+            return prev.map((d) => (d.appId === taskUpdate.appId ? taskUpdate : d));
+          }
+          return [taskUpdate, ...prev];
+        });
+      },
+      (completedTask) => {
+        // Mark app installed
+        setApps((prevApps) =>
+          prevApps.map((a) => (a.id === completedTask.appId ? { ...a, isInstalled: true } : a))
+        );
+        if (selectedApp?.id === completedTask.appId) {
+          setSelectedApp((prev) => (prev ? { ...prev, isInstalled: true } : null));
+        }
+
+        // Add real notification
+        setNotifications((prevNotifs) => [
+          {
+            id: 'notif_inst_' + Date.now(),
+            title: 'Installation Complete',
+            message: `${completedTask.appName} was verified and installed successfully.`,
+            timestamp: new Date().toISOString(),
+            isRead: false,
+            type: 'SYSTEM',
+            deepLinkAppId: completedTask.appId,
+          },
+          ...prevNotifs,
+        ]);
+
+        // Record real download counter to Firestore
+        recordAppDownload(app.id, app.name, app.developerUid, user?.id, app.version)
+          .then(({ newCount, formatted }) => {
+            setApps((prev) =>
+              prev.map((a) => (a.id === app.id ? { ...a, downloadCount: newCount, downloads: formatted } : a))
+            );
+            if (selectedApp?.id === app.id) {
+              setSelectedApp((prev) => (prev ? { ...prev, downloadCount: newCount, downloads: formatted } : null));
+            }
+          })
+          .catch((err) => {
+            console.warn('[StoreContext] Failed to record download event:', err);
+          });
+      },
+      (failedTask, err) => {
+        console.warn('[Download] Transfer notice:', err);
+      }
+    );
+  };
+
+  const downloadApp = async (app: StoreApp) => {
+    // PART B — Premium Apps + Paid Apps check
+    const isPaidApp = app.appType === 'PAID' || (typeof app.price === 'number' && app.price > 0);
+
+    if (isPaidApp) {
+      const alreadyPurchased = user?.id ? await hasUserPurchasedApp(user.id, app.id) : false;
+
+      if (!alreadyPurchased) {
+        // Intercept and open AVANYX Billing popup before download/install!
+        openBillingPurchase({
+          productId: `app_buy_${app.id}`,
+          productName: app.name,
+          price: app.price || 99,
+          type: 'IN_APP',
+          appId: app.id,
+          appName: app.name,
+          developerUid: app.developerUid,
+          developerName: app.developer,
+          description: `Unlock lifetime download and access to ${app.name}.`,
+          iconUrl: app.iconUrl,
+          onCallback: (res) => {
+            if (res.status === 'SUCCESS' || res.status === 'PENDING_VERIFICATION') {
+              // Immediately start native background download upon purchase!
+              executeActualDownload(app);
+            }
+          }
+        });
+        return;
       }
     }
 
-    // Record real download counter to Firestore
-    recordAppDownload(app.id, app.name, app.developerUid, user?.id, app.version)
-      .then(({ newCount, formatted }) => {
-        setApps((prev) =>
-          prev.map((a) => (a.id === app.id ? { ...a, downloadCount: newCount, downloads: formatted } : a))
-        );
-        if (selectedApp?.id === app.id) {
-          setSelectedApp((prev) => (prev ? { ...prev, downloadCount: newCount, downloads: formatted } : null));
-        }
-      })
-      .catch((err) => {
-        console.warn('[StoreContext] Failed to record download event:', err);
-      });
-
-    const totalBytes = parseFloat(app.apkSize) * 1024 * 1024 || 25000000;
-
-    const newTask: DownloadTask = {
-      appId: app.id,
-      appName: app.name,
-      iconUrl: app.iconUrl,
-      progress: 5,
-      speed: '12.4 MB/s',
-      status: 'DOWNLOADING',
-      totalSize: app.apkSize,
-      downloadedBytes: Math.floor(totalBytes * 0.05),
-      totalBytes,
-    };
-
-    setDownloads((prev) => [newTask, ...prev.filter((d) => d.appId !== app.id)]);
+    // Free app or already purchased -> start background download
+    executeActualDownload(app);
   };
 
   const pauseDownload = (appId: string) => {
-    setDownloads((prev) =>
-      prev.map((d) => (d.appId === appId ? { ...d, status: 'PAUSED', speed: '0 MB/s' } : d))
-    );
+    const target = downloads.find((d) => d.appId === appId);
+    if (target) {
+      const paused = pauseBackgroundDownload(target);
+      setDownloads((prev) => prev.map((d) => (d.appId === appId ? paused : d)));
+    }
   };
 
   const resumeDownload = (appId: string) => {
-    setDownloads((prev) =>
-      prev.map((d) => (d.appId === appId ? { ...d, status: 'DOWNLOADING' } : d))
-    );
+    const app = apps.find((a) => a.id === appId);
+    if (app) {
+      executeActualDownload(app);
+    }
   };
 
   const cancelDownload = (appId: string) => {
+    cancelBackgroundDownload(appId);
     setDownloads((prev) => prev.filter((d) => d.appId !== appId));
   };
 
@@ -1603,9 +1649,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         markNotificationRead,
         markAllNotificationsRead,
         deleteNotification,
+        activeBillingRequest,
+        openBillingPurchase,
+        closeBillingPurchase,
       }}
     >
       {children}
+      {activeBillingRequest && (
+        <PurchasePopupModal
+          request={activeBillingRequest}
+          isOpen={!!activeBillingRequest}
+          onClose={closeBillingPurchase}
+        />
+      )}
     </StoreContext.Provider>
   );
 };

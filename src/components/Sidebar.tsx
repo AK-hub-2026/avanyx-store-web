@@ -20,7 +20,9 @@ import {
   Sparkles,
   Compass,
   GraduationCap,
-  BadgeCheck
+  BadgeCheck,
+  Receipt,
+  Gift
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -448,6 +450,42 @@ export const Sidebar: React.FC = () => {
                     {unreadCount} new
                   </span>
                 )}
+              </div>
+            )}
+          </button>
+
+          {/* 🧾 Purchase History & Billing */}
+          <button
+            id="sidebar-nav-purchase-history"
+            onClick={() => handleTabClick('PURCHASE_HISTORY')}
+            className={getItemClass('PURCHASE_HISTORY')}
+            title="Purchase History & Billing"
+          >
+            <Receipt className="w-5 h-5 shrink-0 text-[#6750A4] dark:text-[#D0BCFF]" />
+            {sidebarOpen && (
+              <div className="flex-1 flex items-center justify-between min-w-0">
+                <span className="truncate">Purchases & Billing</span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                  v3.7
+                </span>
+              </div>
+            )}
+          </button>
+
+          {/* 🎁 Rewards Center (PART F) */}
+          <button
+            id="sidebar-nav-rewards-center"
+            onClick={() => handleTabClick('REWARDS_CENTER')}
+            className={getItemClass('REWARDS_CENTER')}
+            title="Rewards Center"
+          >
+            <Gift className="w-5 h-5 shrink-0 text-amber-500" />
+            {sidebarOpen && (
+              <div className="flex-1 flex items-center justify-between min-w-0">
+                <span className="truncate">Rewards Center</span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                  Bonus
+                </span>
               </div>
             )}
           </button>

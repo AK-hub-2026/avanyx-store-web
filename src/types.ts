@@ -20,6 +20,8 @@ export type AppCategory =
   | 'BUSINESS'
   | 'UTILITIES';
 
+export type AppType = 'FREE' | 'PAID' | 'IN_APP_PURCHASE' | 'SUBSCRIPTION' | 'FREE_WITH_PREMIUM';
+
 export interface StoreApp {
   id: string;
   name: string;
@@ -55,6 +57,7 @@ export interface StoreApp {
   isStudentSpotlight?: boolean;
   isGame?: boolean;
   price: number;
+  appType?: AppType;
   tags: string[];
   releaseDate: string;
   securityScore: number; // e.g. 98% clean
@@ -195,7 +198,12 @@ export interface FeaturedBanner {
   ctaText?: string;
 }
 
-export type PromotionType = 'HERO_BANNER' | 'TRENDING' | 'CATEGORY_SPOTLIGHT';
+export type PromotionType =
+  | 'HERO_BANNER'
+  | 'TRENDING'
+  | 'CATEGORY_SPOTLIGHT'
+  | 'FEATURED_APP'
+  | 'FESTIVAL_SPECIAL';
 export type PromotionStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ACTIVE' | 'EXPIRED';
 
 export interface PromotionRequest {
@@ -294,18 +302,22 @@ export interface AppNotification {
   category?: string;
 }
 
-export type DownloadStatus = 'DOWNLOADING' | 'PAUSED' | 'VERIFYING' | 'INSTALLED' | 'FAILED';
+export type DownloadStatus = 'PREPARING' | 'DOWNLOADING' | 'COMPLETED' | 'FAILED' | 'PAUSED' | 'VERIFYING' | 'INSTALLED';
 
 export interface DownloadTask {
   appId: string;
   appName: string;
   iconUrl: string;
   progress: number; // 0 to 100
-  speed: string; // e.g., '12.4 MB/s'
+  speed: string; // e.g., '12.4 MB/s' or '340 KB/s'
   status: DownloadStatus;
   totalSize: string;
   downloadedBytes: number;
   totalBytes: number;
+  remainingTime?: string; // e.g., '14s left'
+  downloadUrl?: string;
+  errorReason?: string;
+  startedAt?: number;
 }
 
 export type UserRole = 'USER' | 'DEVELOPER' | 'VERIFIED_DEVELOPER' | 'STUDENT' | 'VERIFIED_STUDENT' | 'ADMIN';
@@ -314,6 +326,241 @@ export type DeveloperStatus = 'NONE' | 'PENDING' | 'PENDING_REVIEW' | 'UNDER_REV
 export type StudentStatus = 'NONE' | 'PENDING' | 'PENDING_REVIEW' | 'UNDER_REVIEW' | 'VERIFIED' | 'APPROVED' | 'REJECTED' | 'REQUEST_INFO';
 export type AdminStatus = 'NONE' | 'ACTIVE' | 'SUSPENDED';
 export type VerificationBadge = 'NONE' | 'VERIFIED' | 'VERIFIED_DEVELOPER' | 'VERIFIED_STUDENT' | 'ADMIN' | 'OFFICIAL';
+
+// AVANYX Store v3.7.0 Production Billing API Types
+export type BillingProductType = 'IN_APP' | 'SUBSCRIPTION';
+export type BillingProductStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+export type BillingPurchaseStatus = 'SUCCESS' | 'PENDING_VERIFICATION' | 'FAILED' | 'CANCELLED';
+export type SubscriptionStatus = 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'PENDING_VERIFICATION';
+
+export interface BillingProduct {
+  id: string; // doc id = immutable productId
+  productId: string; // permanent immutable identifier (e.g. 'premium_remove_ads')
+  name: string;
+  description: string;
+  type: BillingProductType;
+  price: number; // Final price in INR ₹
+  originalPrice?: number;
+  discountPercent?: number;
+  billingPeriod?: 'MONTHLY' | 'YEARLY' | 'WEEKLY' | 'LIFETIME';
+  appId: string;
+  appName: string;
+  developerUid: string;
+  developerName?: string;
+  iconUrl?: string;
+  features?: string[];
+  status: BillingProductStatus;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface BillingPurchase {
+  id: string;
+  purchaseToken: string; // Unique token (e.g. 'AVX-PUR-2026-ABC123')
+  productId: string;
+  productName: string;
+  productType: BillingProductType;
+  appId: string;
+  appName: string;
+  appIconUrl?: string;
+  developerUid: string;
+  developerName?: string;
+  userUid: string;
+  userEmail?: string;
+  userName?: string;
+  amount: number;
+  originalAmount: number;
+  discountAmount: number;
+  couponUsed?: string;
+  paymentStatus: BillingPurchaseStatus;
+  utr: string; // 12-digit transaction UTR
+  paymentScreenshotUrl: string;
+  upiId: string;
+  createdAt: string;
+  updatedAt?: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
+  clientCallbackUrl?: string;
+  verificationNotes?: string;
+}
+
+export interface BillingSubscription {
+  id: string; // subscriptionId
+  subscriptionId: string;
+  planId: string;
+  productId: string;
+  productName: string;
+  appId: string;
+  appName: string;
+  developerUid: string;
+  userUid: string;
+  userEmail?: string;
+  status: SubscriptionStatus;
+  startDate: string;
+  endDate: string;
+  billingCycle: 'MONTHLY' | 'YEARLY';
+  autoRenew: boolean;
+  nextBillingDate: string;
+  lastPurchaseToken: string;
+  amount: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface BillingNotification {
+  id: string;
+  userUid: string;
+  userId?: string;
+  purchaseToken: string;
+  productId: string;
+  productName?: string;
+  appId?: string;
+  status: BillingPurchaseStatus;
+  type: 'PURCHASE' | 'SUBSCRIPTION' | 'REFUND' | 'SYSTEM';
+  message: string;
+  createdAt: string;
+  isRead: boolean;
+}
+
+export interface BillingCallbackResponse {
+  status: BillingPurchaseStatus;
+  productId: string;
+  purchaseToken: string;
+  amount?: number;
+  timestamp?: string;
+  message?: string;
+}
+
+export type UpiIntentApp = 'GENERIC' | 'PHONEPE' | 'GPAY' | 'PAYTM' | 'BHIM';
+
+export type PayoutStatus = 'PENDING' | 'PROCESSING' | 'PAID' | 'FAILED' | 'REJECTED';
+export type PayoutMethod = 'UPI' | 'BANK_TRANSFER';
+
+export interface DeveloperPayout {
+  id: string; // payoutId (e.g. 'PAYOUT-2026-XXXX')
+  payoutId: string;
+  developerUid: string;
+  developerName: string;
+  developerEmail?: string;
+  creatorType?: 'DEVELOPER' | 'STUDENT';
+  amount: number; // Requested amount in INR ₹
+  payoutMethod: PayoutMethod;
+  upiId?: string;
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  bankName?: string;
+  accountHolderName?: string;
+  status: PayoutStatus;
+  requestedAt: string;
+  processedAt?: string;
+  processedBy?: string;
+  transactionRef?: string; // UTR or Bank Reference
+  paymentReceiptUrl?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// Single Dynamic UPI Source (payment_settings/global)
+export interface GlobalPaymentSettings {
+  id?: string;
+  upiId: string;
+  accountName: string;
+  qrBase?: string;
+  enabled: boolean;
+  paymentTypes: {
+    DEVELOPER_VERIFICATION: number;
+    STUDENT_VERIFICATION: number;
+    BANNER_PROMOTION: number;
+    FEATURED_APP_PROMOTION: number;
+    CATEGORY_SPOTLIGHT_PROMOTION: number;
+    STORE_ADVERTISEMENT_PROMOTION: number;
+    IN_APP_DEFAULT: number;
+    SUBSCRIPTION_DEFAULT: number;
+    [key: string]: number;
+  };
+  updatedAt?: any;
+  updatedBy?: string;
+}
+
+// Creator API Key for API Center (developer_api_keys, student_api_keys)
+export interface CreatorApiKey {
+  id: string; // creatorUid
+  creatorUid: string;
+  creatorName: string;
+  creatorType: 'DEVELOPER' | 'STUDENT';
+  apiKey: string; // 'avx_live_sk_...'
+  projectId: string; // 'avx-proj-...'
+  sdkStatus: 'ACTIVE' | 'PENDING' | 'INACTIVE';
+  billingStatus: 'ACTIVE' | 'RESTRICTED' | 'UNLINKED';
+  purchaseCallbackUrl?: string;
+  webhookUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+  lastRotatedAt?: string;
+}
+
+// Student Stage 2: Guardian/Teacher Verified
+export interface StudentStage2Verification {
+  verifierType: 'GUARDIAN' | 'CLASS_TEACHER';
+  relationship: 'PARENT' | 'GUARDIAN' | 'CLASS_TEACHER' | 'HOD' | 'MENTOR';
+  verifierName: string;
+  verifierContact: string;
+  teacherIdOrParentId: string;
+  verifierSelfieUrl: string;
+  consentAccepted: boolean;
+  status: 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED';
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewerNotes?: string;
+}
+
+export interface DeveloperPayoutSetting {
+  id: string; // developerUid
+  developerUid: string;
+  payoutMethod: PayoutMethod;
+  upiId?: string;
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  bankName?: string;
+  accountHolderName?: string;
+  phone?: string;
+  panNumber?: string;
+  updatedAt: string;
+}
+
+export interface SubscriptionPlan {
+  id: string; // planId
+  planId: string;
+  productId: string;
+  name: string;
+  appId: string;
+  appName: string;
+  developerUid: string;
+  price: number;
+  billingPeriod: 'MONTHLY' | 'QUARTERLY' | 'YEARLY' | 'LIFETIME';
+  trialDays?: number;
+  features: string[];
+  status: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+}
+
+export interface BillingPurchaseRequest {
+  productId: string;
+  price?: number;
+  type?: BillingProductType;
+  appId?: string;
+  appName?: string;
+  productName?: string;
+  description?: string;
+  iconUrl?: string;
+  developerUid?: string;
+  developerName?: string;
+  features?: string[];
+  couponCode?: string;
+  clientCallbackUrl?: string;
+  onCallback?: (response: BillingCallbackResponse) => void;
+}
 
 // AVANYX Store v3.6 Production Payment Center Types
 export type PaymentType =
@@ -356,8 +603,12 @@ export interface CouponCode {
   description: string;
   validUntil: string; // ISO date '2027-12-31T23:59:59.999Z'
   enabled: boolean;
-  usedCount: number;
-  usedBy: string[]; // developer user IDs
+  usedCount?: number;
+  currentUses?: number;
+  maxUses?: number;
+  developerOnly?: boolean;
+  minimumAmount?: number;
+  usedBy?: string[]; // developer user IDs
   createdAt: string;
 }
 
@@ -373,10 +624,14 @@ export interface PaymentRecord {
   originalAmount: number;
   discountAmount: number;
   finalAmount: number;
+  amount?: number;
+  amountPaid?: number;
   couponUsed?: string;
+  couponCode?: string;
   upiId: string;
   accountName?: string;
   utr: string; // 12-digit transaction ID (Required, unique)
+  transactionId?: string;
   paymentScreenshotUrl: string; // Required
   applicationToken: string;
   status: PaymentStatus;
@@ -786,6 +1041,8 @@ export interface User {
   verifiedDeveloper: boolean;
   developerStatus: DeveloperStatus;
   studentStatus: StudentStatus;
+  studentStage2Verified?: boolean;
+  studentStage2?: StudentStage2Verification;
   adminStatus: AdminStatus;
   verificationBadge: VerificationBadge;
   developerDetails?: DeveloperDetails;
@@ -823,6 +1080,119 @@ export type NavigationTab =
   | 'SIGNUP'
   | 'ACCOUNT'
   | 'ADMIN_OAUTH'
+  | 'PURCHASE_HISTORY'
+  | 'REWARDS_CENTER'
   | 'IDENTITY';
+
+// AVANYX Store v3.7.2 Commission Settings
+export interface CommissionSettings {
+  id: string; // 'global'
+  appSaleCommission: number; // default 10%
+  inAppCommission: number; // default 10%
+  subscriptionCommission: number; // default 10%
+  promotionCommission: number; // default 5%
+  updatedAt: string;
+  updatedBy?: string;
+}
+
+// AVANYX Store v3.7.2 Download Analytics
+export type DownloadAnalyticsEventType =
+  | 'DOWNLOAD_START'
+  | 'DOWNLOAD_COMPLETE'
+  | 'INSTALL'
+  | 'UPDATE'
+  | 'DOWNLOAD_FAILED';
+
+export interface DownloadAnalyticsEvent {
+  id?: string;
+  appId: string;
+  appName: string;
+  developerUid: string;
+  userId?: string;
+  eventType: DownloadAnalyticsEventType;
+  downloadSpeedKbps?: number;
+  downloadSpeedFormatted?: string;
+  fileSizeBytes?: number;
+  durationSeconds?: number;
+  country: string;
+  androidVersion?: string;
+  browser?: string;
+  platform?: string;
+  errorReason?: string;
+  timestamp: string;
+}
+
+// AVANYX Store v3.7.2 Rewards Center (No Wallet)
+export type RewardTier = 'STUDENT_CREATOR' | 'EXPLORER' | 'PRO_DEVELOPER' | 'TOP_BUILDER';
+
+export interface RewardAccount {
+  id?: string;
+  userId: string;
+  points: number;
+  tier: RewardTier;
+  totalEarned: number;
+  updatedAt: string;
+}
+
+export type RewardType =
+  | 'FESTIVAL_REWARD'
+  | 'REFERRAL_REWARD'
+  | 'DOWNLOAD_REWARD'
+  | 'DEVELOPER_REWARD'
+  | 'COUPON_CLAIM';
+
+export interface RewardHistoryItem {
+  id: string;
+  userId: string;
+  rewardType: RewardType;
+  amount: number;
+  title: string;
+  description: string;
+  timestamp: string;
+  claimed: boolean;
+  metadata?: any;
+}
+
+export interface UserCoupon {
+  id: string;
+  userId: string;
+  couponCode: string;
+  discountPercent?: number;
+  discountAmount?: number;
+  title: string;
+  category: 'ALL' | 'IN_APP' | 'PAID_APP' | 'PROMOTION';
+  status: 'ACTIVE' | 'USED' | 'EXPIRED';
+  expiresAt: string;
+  createdAt: string;
+  minSpend?: number;
+}
+
+// AVANYX Store v3.7.2 Billing Popup Audit Log
+export interface BillingAuditStep {
+  completed: boolean;
+  timestamp?: string;
+  details?: string;
+}
+
+export interface BillingAuditLog {
+  id: string;
+  auditId: string;
+  purchaseToken?: string;
+  productId: string;
+  productName?: string;
+  appId?: string;
+  userUid?: string;
+  timestamp: string;
+  steps: {
+    popupOpened: BillingAuditStep;
+    upiIntentLaunched: BillingAuditStep;
+    qrLoaded: BillingAuditStep;
+    purchaseRecordCreated: BillingAuditStep;
+    notificationDelivered: BillingAuditStep;
+  };
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+  failureReason?: string;
+  deviceInfo?: string;
+}
 
 

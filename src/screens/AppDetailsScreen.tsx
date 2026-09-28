@@ -28,8 +28,10 @@ import {
   Info,
   Loader2
 } from 'lucide-react';
-import { AppReview } from '../types';
+import { AppReview, BillingProduct } from '../types';
 import { AvanyxIdentityAvatar } from '../components/identity';
+import { AVANYX } from '../sdk/avanyxBillingSdk';
+import { getBillingProductsByApp } from '../services/billingService';
 import {
   fetchAppReviews,
   submitAppReview,
@@ -59,6 +61,7 @@ export const AppDetailsScreen: React.FC = () => {
   // Reviews & Rating State
   const [reviews, setReviews] = useState<AppReview[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [appProducts, setAppProducts] = useState<BillingProduct[]>([]);
   const [userRating, setUserRating] = useState<number>(5);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [reviewTitle, setReviewTitle] = useState('');
@@ -100,6 +103,16 @@ export const AppDetailsScreen: React.FC = () => {
     }
 
     loadReviews();
+
+    // Load In-App Products & Subscriptions for this App
+    if (selectedApp?.id) {
+      getBillingProductsByApp(selectedApp.id)
+        .then((prods) => {
+          if (isMounted) setAppProducts(prods);
+        })
+        .catch((e) => console.warn('Products load notice:', e));
+    }
+
     return () => {
       isMounted = false;
     };
@@ -361,9 +374,24 @@ export const AppDetailsScreen: React.FC = () => {
                 <ExternalLink className="w-2.5 h-2.5 opacity-70" />
               </button>
             </div>
-            <p className="text-[11px] font-mono text-[#49454F] dark:text-[#CAC4D0] mt-0.5">
-              {selectedApp.packageName} • v{selectedApp.version || '1.0.0'}
-            </p>
+            <div className="flex items-center gap-2 flex-wrap mt-0.5">
+              <p className="text-[11px] font-mono text-[#49454F] dark:text-[#CAC4D0]">
+                {selectedApp.packageName} • v{selectedApp.version || '1.0.0'}
+              </p>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                (selectedApp.appType === 'PAID' || selectedApp.price > 0)
+                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                  : selectedApp.appType === 'IN_APP_PURCHASE'
+                  ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                  : selectedApp.appType === 'SUBSCRIPTION'
+                  ? 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+                  : selectedApp.appType === 'FREE_WITH_PREMIUM'
+                  ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20'
+                  : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+              }`}>
+                {(selectedApp.appType === 'PAID' || selectedApp.price > 0) ? `PAID ₹${selectedApp.price || 99}` : (selectedApp.appType || 'FREE')}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -394,15 +422,17 @@ export const AppDetailsScreen: React.FC = () => {
               className={`w-full sm:w-auto px-8 py-3.5 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-lg ${
                 isDownloading
                   ? 'bg-amber-500 text-white animate-pulse'
+                  : (selectedApp.appType === 'PAID' || selectedApp.price > 0)
+                  ? 'bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white'
                   : 'bg-[#6750A4] hover:bg-[#573F94] active:scale-[0.98] text-white'
               }`}
-              title={selectedApp.downloadUrl ? `Direct Download APK: ${selectedApp.downloadUrl}` : 'Download APK'}
+              title="Download APK package safely via native background manager"
             >
               {isDownloading ? (
-                `Downloading ${activeDownload?.progress}%`
+                `Downloading ${activeDownload?.progress}% • ${activeDownload?.speed || ''}`
               ) : (
                 <>
-                  <Download className="w-4 h-4" /> Download APK ({selectedApp.apkSize})
+                  <Download className="w-4 h-4" /> Install / Get ({selectedApp.apkSize})
                 </>
               )}
             </button>

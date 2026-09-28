@@ -15,7 +15,9 @@ import {
   Layers,
   Sparkles,
   ShieldCheck,
-  X
+  X,
+  Lock,
+  Tag
 } from 'lucide-react';
 
 interface StudentProjectsListProps {
@@ -37,6 +39,8 @@ export const StudentProjectsList: React.FC<StudentProjectsListProps> = ({
 }) => {
   // Submission form state
   const [appName, setAppName] = useState('');
+  const [projectType, setProjectType] = useState<'APP' | 'GAME'>('APP');
+  const [appType, setAppType] = useState<'FREE' | 'FREE_WITH_PREMIUM' | 'IN_APP_PURCHASE' | 'SUBSCRIPTION'>('FREE');
   const [packageName, setPackageName] = useState('');
   const [version, setVersion] = useState('1.0.0');
   const [versionCode, setVersionCode] = useState(1);
@@ -64,33 +68,37 @@ export const StudentProjectsList: React.FC<StudentProjectsListProps> = ({
     setFormSuccess(null);
 
     try {
+      const isGame = projectType === 'GAME';
       const payload: AppSubmissionPayload = {
         name: appName.trim(),
         packageName: packageName.trim().toLowerCase(),
         developer: user.name || 'Student Developer',
         developerUid: user.id,
-        category: 'EDUCATION',
-        categoryId: 'education',
+        category: isGame ? 'GAMES' : 'EDUCATION',
+        categoryId: isGame ? 'games' : 'education',
+        appType: appType,
+        price: 0,
         iconUrl:
           iconUrl.trim() ||
           `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(appName)}`,
-        bannerUrl:
-          'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80',
+        bannerUrl: isGame
+          ? 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80'
+          : 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80',
         screenshots: [
           'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
           'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80'
         ],
-        sizeMb: 18.5,
-        isGame: false,
+        sizeMb: isGame ? 35.0 : 18.5,
+        isGame: isGame,
         downloadUrl: downloadUrl.trim() || 'https://github.com/avanyx/releases/download/v1.0.0/app-release.apk',
         checksumSha256:
           sha256.trim() ||
           'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
         version: version.trim() || '1.0.0',
         versionCode: Number(versionCode) || 1,
-        fullDescription: description.trim() || 'Student academic project built for coursework and coursework evaluation.',
-        features: ['Material You UI', 'Lightweight APK', 'Open Academic Source'],
-        tags: ['student', 'education', 'academic', 'coursework']
+        fullDescription: description.trim() || `Student ${isGame ? 'game' : 'educational app'} built for coursework and academic portfolio.`,
+        features: ['Material You UI', isGame ? 'Offline 60FPS Gameplay' : 'Coursework Sync', 'Open Academic Source'],
+        tags: ['student', isGame ? 'games' : 'education', 'academic', 'coursework']
       };
 
       await submitAppForReview(payload);
@@ -256,6 +264,100 @@ export const StudentProjectsList: React.FC<StudentProjectsListProps> = ({
             )}
 
             <form onSubmit={handleSubmitApp} className="space-y-4 text-xs">
+              {/* PART D: Developer Chooses Free App or Free Game */}
+              <div>
+                <label className="block font-bold text-slate-300 mb-1.5">Project Type (Student Tier: 100% Free)</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setProjectType('APP')}
+                    className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
+                      projectType === 'APP'
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-sm'
+                        : 'bg-[#0B0F17] border-cyan-500/20 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Free Educational App
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setProjectType('GAME')}
+                    className={`p-2.5 rounded-xl border text-center font-bold transition-all ${
+                      projectType === 'GAME'
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-sm'
+                        : 'bg-[#0B0F17] border-cyan-500/20 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Free Educational Game
+                  </button>
+                </div>
+              </div>
+
+              {/* PART D: Student Premium Publishing Type Selection */}
+              <div>
+                <label className="block font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+                  <span>App Monetization Model (PART D)</span>
+                  <span className="text-[10px] text-cyan-400 font-mono">Student Creator Pro</span>
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAppType('FREE')}
+                    className={`p-2 rounded-xl border text-center font-bold text-xs transition-all ${
+                      appType === 'FREE'
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-sm'
+                        : 'bg-[#0B0F17] border-cyan-500/20 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    FREE
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAppType('FREE_WITH_PREMIUM')}
+                    className={`p-2 rounded-xl border text-center font-bold text-xs transition-all ${
+                      appType === 'FREE_WITH_PREMIUM'
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-sm'
+                        : 'bg-[#0B0F17] border-cyan-500/20 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    FREE + PREMIUM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAppType('IN_APP_PURCHASE')}
+                    className={`p-2 rounded-xl border text-center font-bold text-xs transition-all ${
+                      appType === 'IN_APP_PURCHASE'
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-sm'
+                        : 'bg-[#0B0F17] border-cyan-500/20 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    IN_APP
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAppType('SUBSCRIPTION')}
+                    className={`p-2 rounded-xl border text-center font-bold text-xs transition-all ${
+                      appType === 'SUBSCRIPTION'
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-sm'
+                        : 'bg-[#0B0F17] border-cyan-500/20 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    SUBSCRIPTION
+                  </button>
+                </div>
+
+                {/* Locked PAID App Notice */}
+                <div className="mt-2 p-2.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between text-[11px] text-zinc-400">
+                  <span className="flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Upfront PAID APK publishing</span>
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    Locked (Requires 18+ Verified Dev)
+                  </span>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-300 mb-1">Project / App Name *</label>

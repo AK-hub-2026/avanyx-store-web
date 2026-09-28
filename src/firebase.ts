@@ -195,6 +195,33 @@ export async function withFirestoreRetry<T>(
 }
 
 /**
+ * Recursively removes all keys that have an undefined value so Firestore does not reject writes
+ * with "Unsupported field value: undefined".
+ */
+export function removeUndefinedFields<T>(val: T): T {
+  if (val === null || val === undefined) {
+    return val;
+  }
+  if (Array.isArray(val)) {
+    return val.map((item) => removeUndefinedFields(item)) as unknown as T;
+  }
+  if (typeof val === 'object') {
+    // Preserve FieldValue (serverTimestamp, increment, deleteField, etc.) and Date objects
+    if (val.constructor && val.constructor.name !== 'Object') {
+      return val;
+    }
+    const clean: Record<string, any> = {};
+    for (const [k, v] of Object.entries(val)) {
+      if (v !== undefined) {
+        clean[k] = removeUndefinedFields(v);
+      }
+    }
+    return clean as T;
+  }
+  return val;
+}
+
+/**
  * Safe setDoc wrapper with 3 retries and 15s timeout
  */
 export async function safeSetDoc(
@@ -203,8 +230,9 @@ export async function safeSetDoc(
   options?: any,
   operationName: string = 'setDoc'
 ): Promise<void> {
+  const sanitized = removeUndefinedFields(data);
   return withFirestoreRetry(
-    () => options ? setDoc(docRef, data, options) : setDoc(docRef, data),
+    () => options ? setDoc(docRef, sanitized, options) : setDoc(docRef, sanitized),
     3,
     15000,
     operationName

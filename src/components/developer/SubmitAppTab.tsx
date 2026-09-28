@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { AppCategory, User } from '../../types';
+import { AppCategory, User, AppType } from '../../types';
 import {
   UploadCloud,
   Layers,
@@ -90,8 +90,8 @@ export const SubmitAppTab: React.FC<SubmitAppTabProps> = ({
   const isVerifiedDeveloper = user.role === 'DEVELOPER' || user.developerStatus === 'VERIFIED' || user.verifiedDeveloper;
   const isUnder18Student = isStudentPublisher && !isVerifiedDeveloper;
 
-  const [pricingType, setPricingType] = useState<'FREE' | 'PAID'>('FREE');
-  const [appPrice, setAppPrice] = useState<string>('0.00');
+  const [selectedAppType, setSelectedAppType] = useState<AppType>('FREE');
+  const [appPrice, setAppPrice] = useState<string>('99.00');
 
   // Legal Compliance & Agreement (v3.4.2)
   const [privacyPolicyUrl, setPrivacyPolicyUrl] = useState('');
@@ -300,7 +300,8 @@ export const SubmitAppTab: React.FC<SubmitAppTabProps> = ({
         fullDescription: fullDescription.trim() || shortDescription.trim(),
         features: featuresList,
         tags: tagsList,
-        price: (!isUnder18Student && pricingType === 'PAID') ? (parseFloat(appPrice) || 0) : 0,
+        price: (!isUnder18Student && selectedAppType === 'PAID') ? (parseFloat(appPrice) || 99) : 0,
+        appType: selectedAppType,
         directPublish: isAdmin,
         privacyPolicyUrl: privacyPolicyUrl.trim(),
         termsConditionsUrl: termsConditionsUrl.trim() || undefined,
@@ -478,72 +479,134 @@ export const SubmitAppTab: React.FC<SubmitAppTabProps> = ({
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {/* 1. FREE */}
               <button
                 type="button"
-                onClick={() => {
-                  setPricingType('FREE');
-                  setAppPrice('0.00');
-                }}
+                onClick={() => setSelectedAppType('FREE')}
                 className={`p-4 rounded-2xl border text-left transition-all ${
-                  pricingType === 'FREE'
-                    ? 'bg-purple-500/15 border-purple-500 text-white font-bold'
+                  selectedAppType === 'FREE'
+                    ? 'bg-purple-500/15 border-purple-500 text-white font-bold ring-1 ring-purple-500/50'
                     : 'bg-[#0F1015] border-white/10 text-zinc-400 hover:text-white'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-black text-xs">Free Application</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">$0.00</span>
+                  <span className="font-black text-xs">FREE</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">100% Free</span>
                 </div>
-                <p className="text-[11px] text-zinc-400">Available to all AVANYX users without payment.</p>
+                <p className="text-[11px] text-zinc-400">Available to all users without any payment.</p>
               </button>
 
+              {/* 2. PAID */}
               <button
                 type="button"
                 disabled={isUnder18Student}
                 onClick={() => {
                   if (!isUnder18Student) {
-                    setPricingType('PAID');
-                    if (appPrice === '0.00') setAppPrice('0.99');
+                    setSelectedAppType('PAID');
                   }
                 }}
                 className={`p-4 rounded-2xl border text-left transition-all ${
                   isUnder18Student
                     ? 'opacity-40 cursor-not-allowed bg-[#0F1015] border-white/5 text-zinc-500'
-                    : pricingType === 'PAID'
-                    ? 'bg-purple-500/15 border-purple-500 text-white font-bold'
+                    : selectedAppType === 'PAID'
+                    ? 'bg-purple-500/15 border-purple-500 text-white font-bold ring-1 ring-purple-500/50'
                     : 'bg-[#0F1015] border-white/10 text-zinc-400 hover:text-white'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-black text-xs flex items-center gap-1.5">
                     {isUnder18Student && <Lock className="w-3.5 h-3.5 text-zinc-400" />}
-                    <span>Paid Application</span>
+                    <span>PAID</span>
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold">
-                    {isUnder18Student ? 'Locked (18+)' : 'Commercial'}
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold">
+                    {isUnder18Student ? 'Locked (18+)' : 'Upfront Buy'}
                   </span>
                 </div>
                 <p className="text-[11px] text-zinc-400">
-                  {isUnder18Student
-                    ? 'Requires 18+ Developer Verification to unlock.'
-                    : 'Charge users for one-time license purchase.'}
+                  {isUnder18Student ? 'Requires 18+ Verification.' : 'Opens AVANYX Billing before download.'}
                 </p>
+              </button>
+
+              {/* 3. IN_APP_PURCHASE */}
+              <button
+                type="button"
+                onClick={() => setSelectedAppType('IN_APP_PURCHASE')}
+                className={`p-4 rounded-2xl border text-left transition-all ${
+                  selectedAppType === 'IN_APP_PURCHASE'
+                    ? 'bg-purple-500/15 border-purple-500 text-white font-bold ring-1 ring-purple-500/50'
+                    : 'bg-[#0F1015] border-white/10 text-zinc-400 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-black text-xs">IN_APP_PURCHASE</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-bold">In-App Store</span>
+                </div>
+                <p className="text-[11px] text-zinc-400">Free to download, sells digital items or upgrades.</p>
+              </button>
+
+              {/* 4. SUBSCRIPTION */}
+              <button
+                type="button"
+                disabled={isUnder18Student}
+                onClick={() => {
+                  if (!isUnder18Student) {
+                    setSelectedAppType('SUBSCRIPTION');
+                  }
+                }}
+                className={`p-4 rounded-2xl border text-left transition-all ${
+                  isUnder18Student
+                    ? 'opacity-40 cursor-not-allowed bg-[#0F1015] border-white/5 text-zinc-500'
+                    : selectedAppType === 'SUBSCRIPTION'
+                    ? 'bg-purple-500/15 border-purple-500 text-white font-bold ring-1 ring-purple-500/50'
+                    : 'bg-[#0F1015] border-white/10 text-zinc-400 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-black text-xs flex items-center gap-1.5">
+                    {isUnder18Student && <Lock className="w-3.5 h-3.5 text-zinc-400" />}
+                    <span>SUBSCRIPTION</span>
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold">
+                    {isUnder18Student ? 'Locked (18+)' : 'Recurring'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-400">
+                  {isUnder18Student ? 'Requires 18+ Verification.' : 'Monthly or annual recurring plans.'}
+                </p>
+              </button>
+
+              {/* 5. FREE_WITH_PREMIUM */}
+              <button
+                type="button"
+                onClick={() => setSelectedAppType('FREE_WITH_PREMIUM')}
+                className={`p-4 rounded-2xl border text-left transition-all ${
+                  selectedAppType === 'FREE_WITH_PREMIUM'
+                    ? 'bg-purple-500/15 border-purple-500 text-white font-bold ring-1 ring-purple-500/50'
+                    : 'bg-[#0F1015] border-white/10 text-zinc-400 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-black text-xs">FREE_WITH_PREMIUM</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold">Freemium</span>
+                </div>
+                <p className="text-[11px] text-zinc-400">Generous free tier with optional premium unlock.</p>
               </button>
             </div>
 
-            {!isUnder18Student && pricingType === 'PAID' && (
+            {!isUnder18Student && selectedAppType === 'PAID' && (
               <div className="pt-2 flex items-center gap-3">
-                <span className="text-xs font-bold text-zinc-300">Price (USD $):</span>
+                <span className="text-xs font-bold text-zinc-300">Price (INR ₹):</span>
                 <input
                   type="number"
-                  step="0.01"
-                  min="0.49"
-                  max="99.99"
+                  step="1"
+                  min="9"
+                  max="9999"
                   value={appPrice}
                   onChange={(e) => setAppPrice(e.target.value)}
                   className="w-32 px-3 py-2 rounded-xl bg-[#0F1015] border border-white/10 text-xs text-white focus:outline-none focus:border-[#9333EA]"
                 />
+                <span className="text-xs text-zinc-400">Opens Billing SDK for ₹{appPrice} before install</span>
               </div>
             )}
           </div>

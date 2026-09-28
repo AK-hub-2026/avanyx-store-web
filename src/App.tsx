@@ -28,9 +28,12 @@ const DeveloperApplyScreen = lazy(() => import('./screens/DeveloperApplyScreen')
 const StudentApplyScreen = lazy(() => import('./screens/StudentApplyScreen').then(m => ({ default: m.StudentApplyScreen })));
 const StudentConsoleScreen = lazy(() => import('./screens/StudentConsoleScreen').then(m => ({ default: m.StudentConsoleScreen })));
 const AvanyxIdentityRouter = lazy(() => import('./screens/identity/AvanyxIdentityRouter').then(m => ({ default: m.AvanyxIdentityRouter })));
+const PurchaseHistoryScreen = lazy(() => import('./screens/PurchaseHistoryScreen').then(m => ({ default: m.PurchaseHistoryScreen })));
 const IdentitySignUpPage = lazy(() => import('./screens/identity/IdentitySignUpPage').then(m => ({ default: m.IdentitySignUpPage })));
 const IdentityAccountPage = lazy(() => import('./screens/identity/IdentityAccountPage').then(m => ({ default: m.IdentityAccountPage })));
 const IdentityOAuthAdminPage = lazy(() => import('./screens/identity/IdentityOAuthAdminPage').then(m => ({ default: m.IdentityOAuthAdminPage })));
+const RewardsCenterScreen = lazy(() => import('./screens/RewardsCenterScreen').then(m => ({ default: m.RewardsCenterScreen })));
+import { NativeDownloadTray } from './components/download/NativeDownloadTray';
 
 const ScreenFallback = () => (
   <div className="w-full min-h-[50vh] flex flex-col items-center justify-center p-8 space-y-3">
@@ -89,6 +92,8 @@ export const AppContent: React.FC = () => {
           setCurrentTab('STUDENT_CONSOLE');
         } else if (path === '/account' || path === '/profile') {
           setCurrentTab('PROFILE');
+        } else if (path === '/purchases' || path === '/billing' || path === '/orders') {
+          setCurrentTab('PURCHASE_HISTORY');
         } else if (path === '/developer' || path === '/dev' || path === '/developer-console' || path === '/developer/console') {
           setCurrentTab('DEV_CONSOLE');
         } else if (path === '/admin' || path === '/admin-console') {
@@ -481,6 +486,10 @@ export const AppContent: React.FC = () => {
       case 'PROFILE':
       case 'ACCOUNT':
         return <ProfileScreen />;
+      case 'PURCHASE_HISTORY':
+        return <PurchaseHistoryScreen />;
+      case 'REWARDS_CENTER':
+        return <RewardsCenterScreen />;
       case 'GMAIL':
         if (!isAdmin) {
           return (
@@ -523,6 +532,9 @@ export const AppContent: React.FC = () => {
             </Suspense>
           </div>
         </main>
+
+        {/* Global Native Download Manager Tray (PART A) */}
+        <NativeDownloadTray />
       </div>
     </div>
   );

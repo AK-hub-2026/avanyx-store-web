@@ -440,3 +440,19 @@ export async function uploadAppScreenshot(
     onProgress
   });
 }
+
+/**
+ * Helper to upload In-App Payment Proof Screenshot
+ */
+export async function uploadPaymentProof(
+  file: File | Blob,
+  userId: string,
+  onProgress?: (progress: number) => void
+): Promise<AvanyxUploadMetadata> {
+  return uploadToAvanyxStorage(file, {
+    folder: '/private/verification/documents/',
+    userId,
+    onProgress
+  });
+}
+

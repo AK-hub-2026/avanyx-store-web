@@ -23,9 +23,12 @@ import {
   getPaymentSetting,
   validateCouponCode,
   checkDuplicateUtr,
-  submitPaymentRecord
+  submitPaymentRecord,
+  subscribeToGlobalPaymentSettings,
+  generateDynamicUpiQr,
+  DEFAULT_GLOBAL_PAYMENT_SETTINGS
 } from '../../services/firestoreService';
-import { PaymentSetting, PaymentType, PaymentStatus } from '../../types';
+import { PaymentSetting, PaymentType, PaymentStatus, GlobalPaymentSettings } from '../../types';
 
 interface PaymentStepViewProps {
   type: 'DEVELOPER' | 'STUDENT';
@@ -66,6 +69,7 @@ export const PaymentStepView: React.FC<PaymentStepViewProps> = ({
     type === 'DEVELOPER' ? 'DEVELOPER_VERIFICATION' : 'STUDENT_VERIFICATION';
 
   // Dynamic Payment Settings from Firestore
+  const [globalSetting, setGlobalSetting] = useState<GlobalPaymentSettings>(DEFAULT_GLOBAL_PAYMENT_SETTINGS);
   const [setting, setSetting] = useState<PaymentSetting | null>(null);
   const [isLoadingSetting, setIsLoadingSetting] = useState(true);
 
@@ -91,6 +95,11 @@ export const PaymentStepView: React.FC<PaymentStepViewProps> = ({
   useEffect(() => {
     let isMounted = true;
     setIsLoadingSetting(true);
+
+    const unsubGlobal = subscribeToGlobalPaymentSettings((g) => {
+      if (isMounted && g) setGlobalSetting(g);
+    });
+
     getPaymentSetting(paymentType)
       .then((res) => {
         if (isMounted) {
@@ -105,20 +114,28 @@ export const PaymentStepView: React.FC<PaymentStepViewProps> = ({
 
     return () => {
       isMounted = false;
+      unsubGlobal();
     };
   }, [paymentType]);
 
-  const baseFee = setting ? setting.amount : type === 'DEVELOPER' ? 1626 : 50;
-  const upiId = setting?.upiId || 'avanyx@upi';
-  const accountName = setting?.accountName || 'AVANYX STORE INDIA';
+  const baseFee = setting
+    ? setting.amount
+    : type === 'DEVELOPER'
+    ? (globalSetting?.paymentTypes?.DEVELOPER_VERIFICATION || 1626)
+    : (globalSetting?.paymentTypes?.STUDENT_VERIFICATION || 50);
+  const upiId = globalSetting?.upiId || setting?.upiId || DEFAULT_GLOBAL_PAYMENT_SETTINGS.upiId;
+  const accountName = globalSetting?.accountName || setting?.accountName || DEFAULT_GLOBAL_PAYMENT_SETTINGS.accountName;
   const finalAmount = Math.max(0, baseFee - couponDiscount);
 
-  // Generate standard UPI QR URL if custom uploaded QR image is absent
+  // Generate standard UPI QR URL from the single dynamic UPI source
   const upiIntentUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(accountName)}&am=${finalAmount}&cu=INR&tn=${encodeURIComponent(applicationToken)}`;
-  const qrDisplayUrl =
-    setting?.qrImageUrl && setting.qrImageUrl.trim().length > 5
-      ? setting.qrImageUrl
-      : `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=12&data=${encodeURIComponent(upiIntentUrl)}`;
+  const qrDisplayUrl = generateDynamicUpiQr(
+    upiId,
+    accountName,
+    finalAmount,
+    applicationToken,
+    globalSetting?.qrBase || setting?.qrImageUrl
+  );
 
   const handleApplyCoupon = async () => {
     setCouponError(null);
@@ -228,7 +245,7 @@ export const PaymentStepView: React.FC<PaymentStepViewProps> = ({
     try {
       const dupCheck = await checkDuplicateUtr(cleanTxId);
       if (dupCheck.isDuplicate) {
-        setValidationError(dupCheck.error || 'This UTR has already been submitted for another payment.');
+        setValidationError(dupCheck.error || 'This UTR has already been used for another payment.');
         return;
       }
     } catch (dupErr) {
@@ -249,7 +266,7 @@ export const PaymentStepView: React.FC<PaymentStepViewProps> = ({
         originalAmount: baseFee,
         discountAmount: couponDiscount,
         finalAmount,
-        couponUsed: appliedCoupon || undefined,
+        couponUsed: appliedCoupon || '',
         upiId,
         accountName,
         utr: cleanTxId,
@@ -270,7 +287,7 @@ export const PaymentStepView: React.FC<PaymentStepViewProps> = ({
     await onSubmitPayment({
       paymentStatus: 'PAYMENT_SUBMITTED',
       transactionId: cleanTxId,
-      couponCode: appliedCoupon || undefined,
+      couponCode: appliedCoupon || '',
       originalAmount: baseFee,
       discountAmount: couponDiscount,
       amountPaid: finalAmount,

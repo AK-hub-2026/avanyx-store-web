@@ -12,7 +12,44 @@ export const AppCard: React.FC<AppCardProps> = ({ app, featuredLayout }) => {
   const { openAppDetails, downloadApp, downloads, openDeveloperProfile } = useStore();
 
   const activeDownload = downloads.find((d) => d.appId === app.id);
-  const isDownloading = activeDownload && activeDownload.status === 'DOWNLOADING';
+  const isDownloading = activeDownload && (activeDownload.status === 'DOWNLOADING' || activeDownload.status === 'PREPARING');
+
+  const renderAppTypeBadge = () => {
+    const type = app.appType || (app.price > 0 ? 'PAID' : 'FREE');
+    switch (type) {
+      case 'PAID':
+        return (
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+            PAID ₹{app.price || 99}
+          </span>
+        );
+      case 'IN_APP_PURCHASE':
+        return (
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/20 shrink-0">
+            In-App
+          </span>
+        );
+      case 'SUBSCRIPTION':
+        return (
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/20 shrink-0">
+            Subscription
+          </span>
+        );
+      case 'FREE_WITH_PREMIUM':
+        return (
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 shrink-0">
+            Free + Premium
+          </span>
+        );
+      case 'FREE':
+      default:
+        return (
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+            Free
+          </span>
+        );
+    }
+  };
 
   if (featuredLayout) {
     return (
@@ -26,9 +63,12 @@ export const AppCard: React.FC<AppCardProps> = ({ app, featuredLayout }) => {
         />
         
         <div className="relative z-10 flex items-start justify-between">
-          <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold tracking-wide uppercase">
-            Featured Spotlight
-          </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold tracking-wide uppercase">
+              Featured Spotlight
+            </span>
+            {renderAppTypeBadge()}
+          </div>
           <div className="flex items-center gap-1 bg-black/30 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>{app.securityScore}% Clean</span>
@@ -111,11 +151,12 @@ export const AppCard: React.FC<AppCardProps> = ({ app, featuredLayout }) => {
           className="w-13 h-13 rounded-2xl object-cover shrink-0 ring-1 ring-black/5 group-hover:scale-105 transition-transform"
         />
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <h3 className="font-bold text-sm text-[#1D1B20] dark:text-[#E6E1E5] truncate">
               {app.name}
             </h3>
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            {renderAppTypeBadge()}
           </div>
           <p
             onClick={(e) => {
@@ -147,10 +188,18 @@ export const AppCard: React.FC<AppCardProps> = ({ app, featuredLayout }) => {
             ? 'bg-[#E8DEF8] dark:bg-[#4A4458] text-[#6750A4] dark:text-[#D0BCFF]'
             : isDownloading
             ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400'
+            : (app.appType === 'PAID' || app.price > 0)
+            ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-sm'
             : 'bg-[#6750A4] hover:bg-[#4F378B] text-white shadow-sm'
         }`}
       >
-        {app.isInstalled ? 'Open' : isDownloading ? `${activeDownload?.progress}%` : 'Get'}
+        {app.isInstalled
+          ? 'Open'
+          : isDownloading
+          ? `${activeDownload?.progress}%`
+          : (app.appType === 'PAID' || app.price > 0)
+          ? `Buy ₹${app.price || 99}`
+          : 'Get'}
       </button>
     </div>
   );

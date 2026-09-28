@@ -287,6 +287,121 @@
         "updatedAt": { "type": "string" }
       },
       "required": ["phoneNumber", "count", "lastResetDate"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "In-App Product or Subscription plan published with immutable productId.",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["IN_APP", "SUBSCRIPTION"] },
+        "price": { "type": "number" },
+        "appId": { "type": "string" },
+        "appName": { "type": "string" },
+        "developerUid": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE", "ARCHIVED"] }
+      },
+      "required": ["productId", "name", "price", "appId", "developerUid", "status"]
+    },
+    "Purchase": {
+      "title": "Purchase",
+      "description": "AVANYX Billing live purchase transaction record.",
+      "type": "object",
+      "properties": {
+        "purchaseToken": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "productType": { "type": "string", "enum": ["IN_APP", "SUBSCRIPTION"] },
+        "appId": { "type": "string" },
+        "appName": { "type": "string" },
+        "developerUid": { "type": "string" },
+        "userUid": { "type": "string" },
+        "amount": { "type": "number" },
+        "paymentStatus": { "type": "string", "enum": ["SUCCESS", "PENDING_VERIFICATION", "FAILED", "CANCELLED"] },
+        "utr": { "type": "string" },
+        "paymentScreenshotUrl": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["purchaseToken", "productId", "appId", "developerUid", "userUid", "amount", "paymentStatus", "utr", "paymentScreenshotUrl"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Active or expired recurring subscription instance.",
+      "type": "object",
+      "properties": {
+        "subscriptionId": { "type": "string" },
+        "planId": { "type": "string" },
+        "productId": { "type": "string" },
+        "appId": { "type": "string" },
+        "developerUid": { "type": "string" },
+        "userUid": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "EXPIRED", "CANCELLED", "PENDING_VERIFICATION"] },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" }
+      },
+      "required": ["subscriptionId", "productId", "appId", "developerUid", "userUid", "status"]
+    },
+    "PurchaseNotification": {
+      "title": "PurchaseNotification",
+      "description": "Customer notification alert for billing status changes.",
+      "type": "object",
+      "properties": {
+        "userUid": { "type": "string" },
+        "purchaseToken": { "type": "string" },
+        "productId": { "type": "string" },
+        "status": { "type": "string" },
+        "message": { "type": "string" },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["userUid", "purchaseToken", "status", "message"]
+    },
+    "SubscriptionPlan": {
+      "title": "SubscriptionPlan",
+      "description": "Configurable recurring subscription plan published for an app.",
+      "type": "object",
+      "properties": {
+        "planId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "appId": { "type": "string" },
+        "developerUid": { "type": "string" },
+        "billingCycle": { "type": "string", "enum": ["MONTHLY", "QUARTERLY", "ANNUAL", "LIFETIME"] },
+        "price": { "type": "number" },
+        "trialDays": { "type": "number" },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE", "ARCHIVED"] }
+      },
+      "required": ["planId", "name", "appId", "developerUid", "billingCycle", "price", "status"]
+    },
+    "DeveloperPayout": {
+      "title": "DeveloperPayout",
+      "description": "Developer payout withdrawal request and settlement status.",
+      "type": "object",
+      "properties": {
+        "payoutId": { "type": "string" },
+        "developerUid": { "type": "string" },
+        "developerName": { "type": "string" },
+        "amount": { "type": "number" },
+        "payoutMethod": { "type": "string", "enum": ["UPI", "BANK_TRANSFER"] },
+        "upiId": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "PROCESSING", "PAID", "REJECTED"] },
+        "requestedAt": { "type": "string" }
+      },
+      "required": ["payoutId", "developerUid", "amount", "payoutMethod", "status", "requestedAt"]
+    },
+    "DeveloperPayoutSetting": {
+      "title": "DeveloperPayoutSetting",
+      "description": "Developer stored payout payment credentials (UPI or Bank account).",
+      "type": "object",
+      "properties": {
+        "developerUid": { "type": "string" },
+        "payoutMethod": { "type": "string", "enum": ["UPI", "BANK_TRANSFER"] },
+        "upiId": { "type": "string" },
+        "bankAccountNumber": { "type": "string" },
+        "bankIfsc": { "type": "string" }
+      },
+      "required": ["developerUid", "payoutMethod"]
     }
   },
   "firestore": {
@@ -353,6 +468,34 @@
     "/uploaded_files/{fileId}": {
       "schema": { "$ref": "#/entities/UploadedFile" },
       "description": "Private verification files and public asset storage metadata"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "In-App products and subscription plans published with immutable productId"
+    },
+    "/purchases/{purchaseId}": {
+      "schema": { "$ref": "#/entities/Purchase" },
+      "description": "Live purchase transactions generated by AVANYX Billing API"
+    },
+    "/subscriptions/{subId}": {
+      "schema": { "$ref": "#/entities/Subscription" },
+      "description": "Customer recurring subscription instances"
+    },
+    "/purchase_notifications/{notifId}": {
+      "schema": { "$ref": "#/entities/PurchaseNotification" },
+      "description": "Billing updates and transaction alerts"
+    },
+    "/subscription_plans/{planId}": {
+      "schema": { "$ref": "#/entities/SubscriptionPlan" },
+      "description": "Recurring subscription plans published by developers"
+    },
+    "/developer_payouts/{payoutId}": {
+      "schema": { "$ref": "#/entities/DeveloperPayout" },
+      "description": "Developer payout withdrawal requests and transaction settlement"
+    },
+    "/payout_settings/{developerUid}": {
+      "schema": { "$ref": "#/entities/DeveloperPayoutSetting" },
+      "description": "Developer saved payout settlement destination (UPI or Bank account)"
     }
   }
 }
