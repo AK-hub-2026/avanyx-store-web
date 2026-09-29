@@ -66,20 +66,19 @@ export interface SeoMetadataPackage {
 }
 
 export function generateAppSeoData(app: StoreApp, origin: string = SITE_ORIGIN): SeoMetadataPackage {
-  const title = `${app.name} APK Download (v${app.version || '1.0.0'}) - AVANYX Store`;
+  const title = `AVANYX Store - ${app.name} APK Download (v${app.version || '1.0.0'})`;
   const rawDesc = (app as any).tagline || app.description || app.fullDescription || 'AI-verified secure Android application.';
-  const cleanDesc = rawDesc.replace(/(<([^>]+)>)/gi, '').slice(0, 155);
-  const description = `Download ${app.name} APK v${app.version || '1.0.0'} on AVANYX Store. ${cleanDesc} Direct, AI-verified, malware-scanned APK download.`;
+  const cleanDesc = rawDesc.replace(/(<([^>]+)>)/gi, '').slice(0, 75);
+  const description = `AVANYX Store presents ${app.name} APK v${app.version || '1.0.0'}. ${cleanDesc} Secure, AI-verified, malware-scanned direct Android download.`;
   const keywords = generateAppKeywords(app);
   const canonicalUrl = `${origin}/app/${app.id}`;
-  const ogImage = app.iconUrl || app.bannerUrl || `${origin}/avanyx-logo.svg`;
+  const ogImage = app.iconUrl || app.bannerUrl || `${origin}/avanyx-store-banner.webp`;
 
   const catStr = (app.category || '').toString().toUpperCase();
   const isGame = catStr === 'GAME' || catStr === 'GAMES' || catStr === 'ACTION' || catStr === 'ARCADE' || catStr === 'CASUAL' || catStr === 'RACING';
 
-  const jsonLdSchema: Record<string, any> = {
-    '@context': 'https://schema.org',
-    '@type': isGame ? 'SoftwareApplication' : 'SoftwareApplication',
+  const softwareAppSchema: Record<string, any> = {
+    '@type': isGame ? 'GameApplication' : 'SoftwareApplication',
     'name': app.name,
     'operatingSystem': 'Android',
     'applicationCategory': isGame ? 'GameApplication' : `${app.category || 'Mobile'}Application`,
@@ -100,15 +99,15 @@ export function generateAppSeoData(app: StoreApp, origin: string = SITE_ORIGIN):
       '@type': 'Organization',
       'name': 'AVANYX Store',
       'url': origin,
-      'logo': `${origin}/avanyx-logo.svg`
+      'logo': `${origin}/avanyx-store-logo.webp`
     },
-    'image': app.iconUrl,
+    'image': app.iconUrl || `${origin}/avanyx-store-logo.webp`,
     'description': cleanDesc,
     'mainEntityOfPage': canonicalUrl
   };
 
   if (app.rating) {
-    jsonLdSchema['aggregateRating'] = {
+    softwareAppSchema['aggregateRating'] = {
       '@type': 'AggregateRating',
       'ratingValue': app.rating.toString(),
       'reviewCount': (app.reviewCount || 12).toString(),
@@ -116,6 +115,63 @@ export function generateAppSeoData(app: StoreApp, origin: string = SITE_ORIGIN):
       'worstRating': '1'
     };
   }
+
+  // Breadcrumb Schema for the application
+  const breadcrumbSchema = {
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'AVANYX Store',
+        'item': `${origin}/store`
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': isGame ? 'Android Games' : 'Android Apps',
+        'item': `${origin}/${isGame ? 'games' : 'apps'}`
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': app.name,
+        'item': canonicalUrl
+      }
+    ]
+  };
+
+  // Dynamic FAQ Schema tailored for each app
+  const appFaqSchema = {
+    '@type': 'FAQPage',
+    'mainEntity': [
+      {
+        '@type': 'Question',
+        'name': `How do I download ${app.name} APK on AVANYX Store?`,
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': `You can download ${app.name} APK directly from AVANYX Store with zero registration required. Every package is cryptographically signed and verified for malware.`
+        }
+      },
+      {
+        '@type': 'Question',
+        'name': `Is ${app.name} verified and safe to install?`,
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': `Yes, ${app.name} has passed the CyberShield 4-tier security audit including DEX bytecode analysis, sandbox execution, and SHA-256 integrity verification.`
+        }
+      }
+    ]
+  };
+
+  const jsonLdSchema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      softwareAppSchema,
+      breadcrumbSchema,
+      appFaqSchema
+    ]
+  };
 
   return {
     title,
@@ -144,17 +200,28 @@ export function generateTabSeoData(
 
   if (q) {
     return {
-      title: `Search "${q}" - AVANYX App Store`,
-      description: `Browse AI-verified APK download search results for "${q}" on AVANYX Store. Secure Android apps and games marketplace.`,
+      title: `AVANYX Store - Search "${q}" Apps & Games`,
+      description: `AVANYX Store search results for "${q}". Browse and download AI-verified Android APKs, games, and developer tools with zero malware.`,
       keywords: `${q}, search ${q}, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
       canonicalUrl: `${origin}/store?q=${encodeURIComponent(q)}`,
-      ogImage: `${origin}/avanyx-logo.svg`,
+      ogImage: `${origin}/avanyx-store-banner.webp`,
       ogType: 'website',
       jsonLdSchema: {
         '@context': 'https://schema.org',
-        '@type': 'SearchResultsPage',
-        'name': `Search results for "${q}" on AVANYX Store`,
-        'url': `${origin}/store?q=${encodeURIComponent(q)}`
+        '@graph': [
+          {
+            '@type': 'SearchResultsPage',
+            'name': `AVANYX Store Search Results for "${q}"`,
+            'url': `${origin}/store?q=${encodeURIComponent(q)}`
+          },
+          {
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+              { '@type': 'ListItem', 'position': 2, 'name': `Search "${q}"`, 'item': `${origin}/store?q=${encodeURIComponent(q)}` }
+            ]
+          }
+        ]
       }
     };
   }
@@ -163,56 +230,92 @@ export function generateTabSeoData(
     case 'INTRO':
       return {
         title: 'AVANYX Store - Official Secure App Marketplace & AI Publishing Platform',
-        description: 'Official AVANYX App Store featuring native Android client, Store Profile, Developer Console, Student Publishing, AI verification pipeline, and verified APK downloads.',
+        description: 'AVANYX Store is the official secure Android app marketplace featuring native APK downloads, Developer Console, Student Publishing, and AI verification.',
         keywords: PRIMARY_SEO_KEYWORDS.join(', '),
         canonicalUrl: `${origin}/`,
-        ogImage: `${origin}/avanyx-logo.svg`,
+        ogImage: `${origin}/avanyx-store-banner.webp`,
         ogType: 'website',
         jsonLdSchema: {
           '@context': 'https://schema.org',
-          '@type': 'Organization',
-          'name': 'AVANYX Store',
-          'url': origin,
-          'logo': `${origin}/avanyx-logo.svg`,
-          'description': 'Official secure app marketplace with native Android client, Developer Console, and Student Publishing.',
-          'sameAs': [
-            'https://twitter.com/avanyxstore',
-            'https://github.com/avanyxstore'
+          '@graph': [
+            {
+              '@type': 'Organization',
+              'name': 'AVANYX Store',
+              'url': origin,
+              'logo': `${origin}/avanyx-store-logo.webp`,
+              'description': 'Official secure app marketplace with native Android client, Developer Console, and Student Publishing.',
+              'sameAs': [
+                'https://twitter.com/avanyxstore',
+                'https://github.com/avanyxstore'
+              ]
+            },
+            {
+              '@type': 'BreadcrumbList',
+              'itemListElement': [
+                { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+                { '@type': 'ListItem', 'position': 2, 'name': 'Developer Console', 'item': `${origin}/developer-console` },
+                { '@type': 'ListItem', 'position': 3, 'name': 'Student Console', 'item': `${origin}/student-console` },
+                { '@type': 'ListItem', 'position': 4, 'name': 'About AVANYX', 'item': `${origin}/about` },
+                { '@type': 'ListItem', 'position': 5, 'name': 'Frequently Asked Questions', 'item': `${origin}/faq` }
+              ]
+            }
           ]
         }
       };
 
     case 'GAMES':
       return {
-        title: 'Android Games APK Downloads - Bomb Rush 3D & Action Games | AVANYX Store',
-        description: 'Explore and download top AI-verified Android games on AVANYX Store. Featuring Bomb Rush 3D, high FPS arcade titles, and malware-scanned APKs.',
+        title: 'AVANYX Store - Android Games APK Downloads | Bomb Rush 3D & Action',
+        description: 'AVANYX Store features top AI-verified Android games including Bomb Rush 3D, high FPS action titles, arcade games, and malware-scanned APK downloads.',
         keywords: `Android Games, Bomb Rush 3D, Game APK, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
         canonicalUrl: `${origin}/games`,
-        ogImage: `${origin}/avanyx-logo.svg`,
+        ogImage: `${origin}/avanyx-store-banner.webp`,
         ogType: 'website',
         jsonLdSchema: {
           '@context': 'https://schema.org',
-          '@type': 'CollectionPage',
-          'name': 'Android Games - AVANYX Store',
-          'description': 'Verified Android games APK directory on AVANYX Store.',
-          'url': `${origin}/games`
+          '@graph': [
+            {
+              '@type': 'CollectionPage',
+              'name': 'Android Games Directory - AVANYX Store',
+              'description': 'Verified Android games APK directory on AVANYX Store.',
+              'url': `${origin}/games`
+            },
+            {
+              '@type': 'BreadcrumbList',
+              'itemListElement': [
+                { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+                { '@type': 'ListItem', 'position': 2, 'name': 'Android Games', 'item': `${origin}/games` }
+              ]
+            }
+          ]
         }
       };
 
     case 'APPS':
       return {
-        title: 'Android Apps Directory - AVANYX AutoPDF & Utilities | AVANYX Store',
-        description: 'Discover AI-verified productivity, utility, and student apps on AVANYX Store. Download AVANYX AutoPDF and secure utility APKs directly.',
+        title: 'AVANYX Store - Android Apps Directory & APK Downloads | AVANYX AutoPDF',
+        description: 'AVANYX Store provides AI-verified productivity and utility Android apps including AVANYX AutoPDF, developer tools, and secure direct APK downloads.',
         keywords: `Android Apps, AVANYX AutoPDF, PDF Tools, Utility APK, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
         canonicalUrl: `${origin}/apps`,
-        ogImage: `${origin}/avanyx-logo.svg`,
+        ogImage: `${origin}/avanyx-store-banner.webp`,
         ogType: 'website',
         jsonLdSchema: {
           '@context': 'https://schema.org',
-          '@type': 'CollectionPage',
-          'name': 'Android Apps Directory - AVANYX Store',
-          'description': 'Verified Android utility and productivity apps on AVANYX Store.',
-          'url': `${origin}/apps`
+          '@graph': [
+            {
+              '@type': 'CollectionPage',
+              'name': 'Android Apps Directory - AVANYX Store',
+              'description': 'Verified Android utility and productivity apps on AVANYX Store.',
+              'url': `${origin}/apps`
+            },
+            {
+              '@type': 'BreadcrumbList',
+              'itemListElement': [
+                { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+                { '@type': 'ListItem', 'position': 2, 'name': 'Android Apps', 'item': `${origin}/apps` }
+              ]
+            }
+          ]
         }
       };
 
@@ -220,18 +323,30 @@ export function generateTabSeoData(
       if (options?.developer) {
         const devName = options.developer.displayName || options.developer.organizationName || 'Developer';
         return {
-          title: `${devName} Developer Profile - Published Apps | AVANYX Store`,
-          description: `View published Android applications and verified developer portfolio for ${devName} on AVANYX Store.`,
+          title: `AVANYX Store - ${devName} Developer Profile & Published Apps`,
+          description: `AVANYX Store presents verified developer portfolio and published Android applications for ${devName}. AI-audited secure APK downloads.`,
           keywords: `${devName}, ${devName} apps, developer portfolio, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
           canonicalUrl: `${origin}/developer-profile/${options.developer.uid}`,
-          ogImage: options.developer.avatarUrl || `${origin}/avanyx-logo.svg`,
+          ogImage: options.developer.avatarUrl || `${origin}/avanyx-store-banner.webp`,
           ogType: 'profile',
           jsonLdSchema: {
             '@context': 'https://schema.org',
-            '@type': 'Organization',
-            'name': devName,
-            'description': options.developer.bio || `Developer profile for ${devName} on AVANYX Store.`,
-            'url': `${origin}/developer-profile/${options.developer.uid}`
+            '@graph': [
+              {
+                '@type': 'Organization',
+                'name': devName,
+                'description': options.developer.bio || `Developer profile for ${devName} on AVANYX Store.`,
+                'url': `${origin}/developer-profile/${options.developer.uid}`
+              },
+              {
+                '@type': 'BreadcrumbList',
+                'itemListElement': [
+                  { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+                  { '@type': 'ListItem', 'position': 2, 'name': 'Developers', 'item': `${origin}/developer-console` },
+                  { '@type': 'ListItem', 'position': 3, 'name': devName, 'item': `${origin}/developer-profile/${options.developer.uid}` }
+                ]
+              }
+            ]
           }
         };
       }
@@ -239,33 +354,57 @@ export function generateTabSeoData(
 
     case 'DEVELOPER_APPLY':
       return {
-        title: 'Apply for Developer Console - Publish Android Apps | AVANYX Store',
-        description: 'Join AVANYX Store Developer Program. Upload APKs, access security scan analytics, manage releases, and publish to thousands of users.',
+        title: 'AVANYX Store - Apply for Developer Console & Publish Android Apps',
+        description: 'AVANYX Store Developer Program invites Android publishers to upload APKs, access AI security scans, manage release tracks, and distribute globally.',
         keywords: `Developer Console, Publish Android App, Developer Verification, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
         canonicalUrl: `${origin}/developer/apply`,
-        ogImage: `${origin}/avanyx-logo.svg`,
+        ogImage: `${origin}/avanyx-store-banner.webp`,
         ogType: 'website',
         jsonLdSchema: {
           '@context': 'https://schema.org',
-          '@type': 'WebPage',
-          'name': 'Developer Program Application - AVANYX Store',
-          'url': `${origin}/developer/apply`
+          '@graph': [
+            {
+              '@type': 'WebPage',
+              'name': 'Developer Program Application - AVANYX Store',
+              'url': `${origin}/developer/apply`
+            },
+            {
+              '@type': 'BreadcrumbList',
+              'itemListElement': [
+                { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+                { '@type': 'ListItem', 'position': 2, 'name': 'Developer Console', 'item': `${origin}/developer-console` },
+                { '@type': 'ListItem', 'position': 3, 'name': 'Apply', 'item': `${origin}/developer/apply` }
+              ]
+            }
+          ]
         }
       };
 
     case 'STUDENT_APPLY':
       return {
-        title: 'Student Publishing Program - 100% Free App Publishing | AVANYX Store',
-        description: 'Publish your student software projects and Android apps completely free on AVANYX Store with verified student status and zero developer fees.',
+        title: 'AVANYX Store - Student Publishing Program & Free App Distribution',
+        description: 'AVANYX Store Student Publishing Program offers 100% free app hosting, zero developer fees, and global distribution for verified academic developers.',
         keywords: `Student Publishing, Free App Hosting, Student Developers, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
         canonicalUrl: `${origin}/student/apply`,
-        ogImage: `${origin}/avanyx-logo.svg`,
+        ogImage: `${origin}/avanyx-store-banner.webp`,
         ogType: 'website',
         jsonLdSchema: {
           '@context': 'https://schema.org',
-          '@type': 'WebPage',
-          'name': 'Student Publishing Program - AVANYX Store',
-          'url': `${origin}/student/apply`
+          '@graph': [
+            {
+              '@type': 'WebPage',
+              'name': 'Student Publishing Program - AVANYX Store',
+              'url': `${origin}/student/apply`
+            },
+            {
+              '@type': 'BreadcrumbList',
+              'itemListElement': [
+                { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+                { '@type': 'ListItem', 'position': 2, 'name': 'Student Console', 'item': `${origin}/student-console` },
+                { '@type': 'ListItem', 'position': 3, 'name': 'Student Apply', 'item': `${origin}/student/apply` }
+              ]
+            }
+          ]
         }
       };
 
@@ -273,31 +412,45 @@ export function generateTabSeoData(
     default:
       return {
         title: 'AVANYX Store - Secure App Marketplace & APK Downloads',
-        description: 'Official AVANYX Store app marketplace. Direct APK downloads for Android apps and games, malware-scanned with AI security verification.',
+        description: 'AVANYX Store is the official Android app marketplace for direct APK downloads, security scanning, developer publishing, and verified software distribution.',
         keywords: PRIMARY_SEO_KEYWORDS.join(', '),
         canonicalUrl: `${origin}/store`,
-        ogImage: `${origin}/avanyx-logo.svg`,
+        ogImage: `${origin}/avanyx-store-banner.webp`,
         ogType: 'website',
         jsonLdSchema: {
           '@context': 'https://schema.org',
-          '@type': 'WebSite',
-          'name': 'AVANYX Store',
-          'url': `${origin}/store`,
-          'potentialAction': {
-            '@type': 'SearchAction',
-            'target': `${origin}/store?q={search_term_string}`,
-            'query-input': 'required name=search_term_string'
-          }
+          '@graph': [
+            {
+              '@type': 'WebSite',
+              'name': 'AVANYX Store',
+              'url': `${origin}/store`,
+              'potentialAction': {
+                '@type': 'SearchAction',
+                'target': `${origin}/store?q={search_term_string}`,
+                'query-input': 'required name=search_term_string'
+              }
+            },
+            {
+              '@type': 'BreadcrumbList',
+              'itemListElement': [
+                { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+                { '@type': 'ListItem', 'position': 2, 'name': 'Developer Console', 'item': `${origin}/developer-console` },
+                { '@type': 'ListItem', 'position': 3, 'name': 'Student Console', 'item': `${origin}/student-console` },
+                { '@type': 'ListItem', 'position': 4, 'name': 'About AVANYX', 'item': `${origin}/about` },
+                { '@type': 'ListItem', 'position': 5, 'name': 'FAQ', 'item': `${origin}/faq` }
+              ]
+            }
+          ]
         }
       };
   }
 
   return {
     title: 'AVANYX Store - Secure App Marketplace',
-    description: 'Official AVANYX Store app marketplace with native Android client, Developer Console, Student Publishing, and AI verified APK downloads.',
+    description: 'AVANYX Store is the official secure Android app marketplace with native Android client, Developer Console, Student Publishing, and verified APK downloads.',
     keywords: PRIMARY_SEO_KEYWORDS.join(', '),
     canonicalUrl: `${origin}/store`,
-    ogImage: `${origin}/avanyx-logo.svg`,
+    ogImage: `${origin}/avanyx-store-banner.webp`,
     ogType: 'website',
     jsonLdSchema: {
       '@context': 'https://schema.org',
@@ -384,7 +537,11 @@ interface SitemapItem {
 export function generateDynamicSitemapXml(apps: StoreApp[], origin: string = SITE_ORIGIN): string {
   const staticUrls: SitemapItem[] = [
     { loc: `${origin}/`, priority: '1.0', changefreq: 'daily' },
-    { loc: `${origin}/store`, priority: '0.9', changefreq: 'hourly' },
+    { loc: `${origin}/store`, priority: '0.95', changefreq: 'hourly' },
+    { loc: `${origin}/developer-console`, priority: '0.9', changefreq: 'daily' },
+    { loc: `${origin}/student-console`, priority: '0.85', changefreq: 'daily' },
+    { loc: `${origin}/about`, priority: '0.8', changefreq: 'weekly' },
+    { loc: `${origin}/faq`, priority: '0.8', changefreq: 'weekly' },
     { loc: `${origin}/apps`, priority: '0.8', changefreq: 'daily' },
     { loc: `${origin}/games`, priority: '0.8', changefreq: 'daily' },
     { loc: `${origin}/developer/apply`, priority: '0.7', changefreq: 'monthly' },

@@ -92,13 +92,17 @@ export const AvanyxIdentityAvatar: React.FC<AvanyxIdentityAvatarProps> = ({
         } transition-all duration-300`}
       >
         {!imgError ? (
-          <img
-            src={src || '/avanyx-identity-avatar.svg'}
-            alt={name}
-            onError={() => setImgError(true)}
-            className="w-full h-full object-cover object-center"
-            referrerPolicy="no-referrer"
-          />
+          <picture className="w-full h-full">
+            <source srcSet="/avanyx-identity-avatar.webp" type="image/webp" />
+            <img
+              src={src || '/avanyx-identity-avatar.webp'}
+              alt={name ? `${name} - AVANYX Identity Profile Avatar` : 'AVANYX User Identity Profile Avatar'}
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover object-center"
+              referrerPolicy="no-referrer"
+              loading="lazy"
+            />
+          </picture>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1F1C18] via-[#0D0D10] to-[#050506] text-amber-300 font-bold font-serif text-sm">
             <span>AK</span>

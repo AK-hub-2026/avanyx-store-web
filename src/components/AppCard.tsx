@@ -79,7 +79,7 @@ export const AppCard: React.FC<AppCardProps> = ({ app, featuredLayout }) => {
           <div className="flex items-center gap-4">
             <img
               src={app.iconUrl}
-              alt={app.name}
+              alt={`${app.name} Application Icon - AVANYX Store`}
               loading="lazy"
               decoding="async"
               className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white/30 shadow-md"
@@ -145,7 +145,7 @@ export const AppCard: React.FC<AppCardProps> = ({ app, featuredLayout }) => {
       <div className="flex items-center gap-3.5 min-w-0">
         <img
           src={app.iconUrl}
-          alt={app.name}
+          alt={`${app.name} Application Icon - AVANYX Store`}
           loading="lazy"
           decoding="async"
           className="w-13 h-13 rounded-2xl object-cover shrink-0 ring-1 ring-black/5 group-hover:scale-105 transition-transform"

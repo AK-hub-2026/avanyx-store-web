@@ -88,8 +88,20 @@ export const AppContent: React.FC = () => {
           setCurrentTab('DEVELOPER_APPLY');
         } else if (path === '/student/apply') {
           setCurrentTab('STUDENT_APPLY');
-        } else if (path === '/student' || path === '/student/console') {
+        } else if (path === '/student' || path === '/student/console' || path === '/student-console') {
           setCurrentTab('STUDENT_CONSOLE');
+        } else if (path === '/about') {
+          setCurrentTab('INTRO');
+          setTimeout(() => {
+            const el = document.getElementById('about');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        } else if (path === '/faq' || path === '/faqs') {
+          setCurrentTab('INTRO');
+          setTimeout(() => {
+            const el = document.getElementById('faqs');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
         } else if (path === '/account' || path === '/profile') {
           setCurrentTab('PROFILE');
         } else if (path === '/purchases' || path === '/billing' || path === '/orders') {
@@ -140,8 +152,20 @@ export const AppContent: React.FC = () => {
         setCurrentTab('DEVELOPER_APPLY');
       } else if (path === '/student/apply') {
         setCurrentTab('STUDENT_APPLY');
-      } else if (path === '/student' || path === '/student/console') {
+      } else if (path === '/student' || path === '/student/console' || path === '/student-console') {
         setCurrentTab('STUDENT_CONSOLE');
+      } else if (path === '/about') {
+        setCurrentTab('INTRO');
+        setTimeout(() => {
+          const el = document.getElementById('about');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else if (path === '/faq' || path === '/faqs') {
+        setCurrentTab('INTRO');
+        setTimeout(() => {
+          const el = document.getElementById('faqs');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
       } else if (path === '/account' || path === '/profile') {
         setCurrentTab('PROFILE');
       } else if (path === '/developer' || path === '/dev' || path === '/developer-console' || path === '/developer/console') {

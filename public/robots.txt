@@ -4,6 +4,10 @@
 User-agent: *
 Allow: /
 Allow: /store
+Allow: /developer-console
+Allow: /student-console
+Allow: /about
+Allow: /faq
 Allow: /apps
 Allow: /games
 Allow: /app/

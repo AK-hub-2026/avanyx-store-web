@@ -222,7 +222,7 @@ export const DeveloperPromotionTab: React.FC<DeveloperPromotionTabProps> = ({
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-black/40 overflow-hidden shrink-0 border border-white/10 flex items-center justify-center">
                     {req.appIcon ? (
-                      <img src={req.appIcon} alt="" className="w-full h-full object-cover" />
+                      <img src={req.appIcon} alt={`${req.appName || 'Campaign'} App Icon - AVANYX Store`} className="w-full h-full object-cover" />
                     ) : (
                       <Layers className="w-6 h-6 text-zinc-600" />
                     )}

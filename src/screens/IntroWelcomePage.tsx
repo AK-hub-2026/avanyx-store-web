@@ -216,8 +216,10 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
       <header className="sticky top-0 z-40 h-20 bg-white/95 dark:bg-[#18191D]/95 backdrop-blur-md border-b border-black/5 dark:border-white/5 px-4 sm:px-8 flex items-center justify-between transition-colors">
         {/* Left: Brand Identity */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
+          <a
+            href="/store"
+            onClick={(e) => {
+              e.preventDefault();
               setCurrentTab('HOME');
               onNavigate('/store');
             }}
@@ -232,33 +234,71 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
                 <ShieldCheck className="w-3 h-3" /> Official Documentation Hub
               </span>
             </div>
-          </button>
+          </a>
         </div>
 
-        {/* Center: Quick Section Links */}
-        <nav className="hidden xl:flex items-center gap-1.5 text-xs font-bold text-[#49454F] dark:text-[#CAC4D0]">
-          <a href="#about" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
-            About
+        {/* Center: Quick Section Links including internal routes */}
+        <nav className="hidden xl:flex items-center gap-1 text-xs font-bold text-[#49454F] dark:text-[#CAC4D0]">
+          <a
+            href="/store"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentTab('HOME');
+              onNavigate('/store');
+            }}
+            className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors"
+          >
+            Store
           </a>
-          <a href="#features" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
-            Features
-          </a>
-          <a href="#ai-pipeline" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
-            AI Security
-          </a>
-          <a href="#dev-console" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
+          <a
+            href="/developer-console"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentTab('DEV_CONSOLE');
+              onNavigate('/developer-console');
+            }}
+            className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors"
+          >
             Developer Console
           </a>
-          <a href="#student-publishing" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
-            Students
+          <a
+            href="/student-console"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentTab('STUDENT_CONSOLE');
+              onNavigate('/student-console');
+            }}
+            className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors"
+          >
+            Student Console
           </a>
-          <a href="#roadmap" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
-            Roadmap
+          <a
+            href="/about"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate('/about');
+            }}
+            className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors"
+          >
+            About
           </a>
-          <a href="#faqs" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
-            FAQs
+          <a
+            href="/faq"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate('/faq');
+            }}
+            className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors"
+          >
+            FAQ
           </a>
-          <a href="#contact" className="px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
+          <a href="#features" className="px-2 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
+            Features
+          </a>
+          <a href="#ai-pipeline" className="px-2 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
+            AI Security
+          </a>
+          <a href="#contact" className="px-2 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1D1B20] dark:hover:text-white transition-colors">
             Contact
           </a>
         </nav>
@@ -274,8 +314,10 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
             {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#6750A4]" />}
           </button>
 
-          <button
-            onClick={() => {
+          <a
+            href="/store"
+            onClick={(e) => {
+              e.preventDefault();
               setCurrentTab('HOME');
               onNavigate('/store');
             }}
@@ -283,7 +325,7 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
           >
             <span>Enter AVANYX Store</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </a>
         </div>
       </header>
 
@@ -301,7 +343,7 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-[#1D1B20] dark:text-white">
-            The Secure App Store for{' '}
+            AVANYX Store — The Secure App Store for{' '}
             <span className="bg-gradient-to-r from-[#6750A4] via-[#9A82DB] to-[#D0BCFF] bg-clip-text text-transparent">
               Android Apps, AI & Developers
             </span>
@@ -312,8 +354,10 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <button
-              onClick={() => {
+            <a
+              href="/store"
+              onClick={(e) => {
+                e.preventDefault();
                 setCurrentTab('HOME');
                 onNavigate('/store');
               }}
@@ -321,10 +365,12 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
             >
               <span>Enter AVANYX Store</span>
               <ArrowRight className="w-5 h-5" />
-            </button>
+            </a>
 
-            <button
-              onClick={() => {
+            <a
+              href="/developer-console"
+              onClick={(e) => {
+                e.preventDefault();
                 setCurrentTab('DEV_CONSOLE');
                 onNavigate('/developer-console');
               }}
@@ -332,7 +378,20 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
             >
               <Terminal className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF]" />
               <span>Open Developer Console</span>
-            </button>
+            </a>
+
+            <a
+              href="/student-console"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('STUDENT_CONSOLE');
+                onNavigate('/student-console');
+              }}
+              className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold text-sm flex items-center justify-center gap-2 transition-all"
+            >
+              <GraduationCap className="w-4 h-4" />
+              <span>Student Console</span>
+            </a>
           </div>
 
           {/* Key Metrics Strip */}
@@ -555,16 +614,18 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
                   <span>0% commission on free applications and open-source binaries</span>
                 </li>
               </ul>
-              <button
-                onClick={() => {
+              <a
+                href="/developer-console"
+                onClick={(e) => {
+                  e.preventDefault();
                   setCurrentTab('DEV_CONSOLE');
                   onNavigate('/developer-console');
                 }}
-                className="px-6 py-3 rounded-2xl bg-[#6750A4] hover:bg-[#523e85] text-white font-bold text-xs shadow-md transition-all flex items-center gap-2"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#6750A4] hover:bg-[#523e85] text-white font-bold text-xs shadow-md transition-all"
               >
                 <span>Access Developer Console</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
             </div>
 
             {/* Student Publishing Overview */}
@@ -583,16 +644,18 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
                   Student accounts feature standard rate limits (up to 10 active app releases per student account) to ensure fair infrastructure usage while adhering to AVANYX Content Policies and security standards.
                 </p>
               </div>
-              <button
-                onClick={() => {
-                  setCurrentTab('STUDENT_APPLY');
-                  onNavigate('/student/apply');
+              <a
+                href="/student-console"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentTab('STUDENT_CONSOLE');
+                  onNavigate('/student-console');
                 }}
-                className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition-all"
               >
-                <span>Apply for Student Publishing</span>
+                <span>Open Student Console</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
             </div>
           </div>
         </section>
@@ -608,15 +671,17 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
                 <span>Live Marketplace Preview</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-[#1D1B20] dark:text-white">
-                Latest & Trending Applications
+                Latest & Trending Applications on AVANYX Store
               </h2>
               <p className="text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0]">
                 Explore newly published Android apps, AI tools, and top-rated games on AVANYX Store.
               </p>
             </div>
 
-            <button
-              onClick={() => {
+            <a
+              href="/store"
+              onClick={(e) => {
+                e.preventDefault();
                 setCurrentTab('HOME');
                 onNavigate('/store');
               }}
@@ -624,7 +689,7 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
             >
               <span>View Full App Store</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </a>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -715,55 +780,66 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
         {/* ───────────────────────────────────────────────────────────── */}
         {/* 9. SECURITY, PRIVACY & TERMS POLICIES */}
         {/* ───────────────────────────────────────────────────────────── */}
-        <div id="security-privacy" className="grid grid-cols-1 lg:grid-cols-2 gap-8 scroll-mt-24">
-          <div className="rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 p-6 sm:p-8 space-y-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
-                <Lock className="w-5 h-5" />
+        <section id="security-privacy" className="space-y-6 scroll-mt-24">
+          <div className="space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#1D1B20] dark:text-white">
+              Security, Privacy & Ecosystem Policies
+            </h2>
+            <p className="text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0]">
+              Transparent governance, zero telemetry guarantee, and fair creator terms.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 p-6 sm:p-8 space-y-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-lg text-[#1D1B20] dark:text-[#E6E1E5]">Security & Privacy Policy</h3>
+                  <p className="text-xs text-[#49454F] dark:text-[#CAC4D0]">Zero behavioral tracking • GDPR & CCPA compliant</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-extrabold text-lg text-[#1D1B20] dark:text-[#E6E1E5]">Security & Privacy Policy</h3>
-                <p className="text-xs text-[#49454F] dark:text-[#CAC4D0]">Zero behavioral tracking • GDPR & CCPA compliant</p>
+
+              <div className="text-xs text-[#49454F] dark:text-[#CAC4D0] space-y-2.5 leading-relaxed">
+                <p>
+                  AVANYX Store does not collect personal device identifiers, track physical locations, or share behavioral analytics with advertising networks.
+                </p>
+                <p>
+                  All APK file transfers are encrypted over TLS 1.3 and served directly without injecting telemetry or advertising layers into app downloads.
+                </p>
+                <div className="p-3 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  ✓ No Telemetry &bull; ✓ Cryptographic Signatures &bull; ✓ Complete Data Sovereignty
+                </div>
               </div>
             </div>
 
-            <div className="text-xs text-[#49454F] dark:text-[#CAC4D0] space-y-2.5 leading-relaxed">
-              <p>
-                AVANYX Store does not collect personal device identifiers, track physical locations, or share behavioral analytics with advertising networks.
-              </p>
-              <p>
-                All APK file transfers are encrypted over TLS 1.3 and served directly without injecting telemetry or advertising layers into app downloads.
-              </p>
-              <div className="p-3 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                ✓ No Telemetry &bull; ✓ Cryptographic Signatures &bull; ✓ Complete Data Sovereignty
+            <div id="terms" className="rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 p-6 sm:p-8 space-y-4 shadow-sm scroll-mt-24">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-[#6750A4]/10 text-[#6750A4] dark:text-[#D0BCFF]">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-lg text-[#1D1B20] dark:text-[#E6E1E5]">Terms & Conditions</h3>
+                  <p className="text-xs text-[#49454F] dark:text-[#CAC4D0]">Publisher guidelines and distribution rights</p>
+                </div>
+              </div>
+
+              <div className="text-xs text-[#49454F] dark:text-[#CAC4D0] space-y-2.5 leading-relaxed">
+                <p>
+                  Publishers agree to distribute software that is free of malicious payload code, spyware, or deceptive paywalls.
+                </p>
+                <p>
+                  AVANYX Store reserves the right to immediately quarantine any software package that fails post-release security re-audits or violates copyright laws.
+                </p>
+                <div className="p-3 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 text-[11px] font-semibold text-[#6750A4] dark:text-[#D0BCFF]">
+                  ✓ Fair Creator Terms &bull; ✓ 0% Revenue Fee &bull; ✓ Takedown Protection
+                </div>
               </div>
             </div>
           </div>
-
-          <div id="terms" className="rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 p-6 sm:p-8 space-y-4 shadow-sm scroll-mt-24">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-[#6750A4]/10 text-[#6750A4] dark:text-[#D0BCFF]">
-                <FileText className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-lg text-[#1D1B20] dark:text-[#E6E1E5]">Terms & Conditions</h3>
-                <p className="text-xs text-[#49454F] dark:text-[#CAC4D0]">Publisher guidelines and distribution rights</p>
-              </div>
-            </div>
-
-            <div className="text-xs text-[#49454F] dark:text-[#CAC4D0] space-y-2.5 leading-relaxed">
-              <p>
-                Publishers agree to distribute software that is free of malicious payload code, spyware, or deceptive paywalls.
-              </p>
-              <p>
-                AVANYX Store reserves the right to immediately quarantine any software package that fails post-release security re-audits or violates copyright laws.
-              </p>
-              <div className="p-3 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 text-[11px] font-semibold text-[#6750A4] dark:text-[#D0BCFF]">
-                ✓ Fair Creator Terms &bull; ✓ 0% Revenue Fee &bull; ✓ Takedown Protection
-              </div>
-            </div>
-          </div>
-        </div>
+        </section>
 
         {/* ───────────────────────────────────────────────────────────── */}
         {/* 10. 25 COMPREHENSIVE SEO & AI SEARCH FAQS */}
@@ -771,10 +847,10 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
         <section id="faqs" className="rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 p-6 sm:p-10 space-y-6 shadow-sm scroll-mt-24">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-2xl font-black text-[#1D1B20] dark:text-[#E6E1E5] flex items-center gap-2.5">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#1D1B20] dark:text-[#E6E1E5] flex items-center gap-2.5">
                 <HelpCircle className="w-6 h-6 text-[#6750A4] dark:text-[#D0BCFF]" />
                 <span>Frequently Asked Questions & Knowledge Base</span>
-              </h3>
+              </h2>
               <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] mt-1">
                 Everything you need to know about AVANYX Store, APK security, developer publishing, and student accounts.
               </p>
@@ -823,10 +899,10 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
         {/* ───────────────────────────────────────────────────────────── */}
         <section id="contact" className="rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 p-6 sm:p-10 space-y-6 shadow-sm scroll-mt-24">
           <div className="max-w-2xl space-y-1">
-            <h3 className="font-extrabold text-2xl text-[#1D1B20] dark:text-[#E6E1E5] flex items-center gap-2.5">
+            <h2 className="font-extrabold text-2xl text-[#1D1B20] dark:text-[#E6E1E5] flex items-center gap-2.5">
               <Mail className="w-6 h-6 text-[#6750A4] dark:text-[#D0BCFF]" />
               <span>Contact AVANYX Developer Relations & Support</span>
-            </h3>
+            </h2>
             <p className="text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0]">
               Have questions regarding developer registration, student publishing status, or security reports? Reach out to our engineering team.
             </p>
@@ -920,18 +996,26 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
       </main>
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 12. FOOTER */}
+      {/* 12. FOOTER WITH COMPLETE INTERNAL LINKS & BREADCRUMB TRAILS */}
       {/* ───────────────────────────────────────────────────────────── */}
       <footer className="border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#18191D] py-12 px-4 sm:px-8 mt-20">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-8">
             <div className="col-span-2 space-y-3">
-              <div className="flex items-center gap-2">
+              <a
+                href="/store"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentTab('HOME');
+                  onNavigate('/store');
+                }}
+                className="flex items-center gap-2 group"
+              >
                 <AvanyxLogo size={32} showText={false} />
-                <span className="font-extrabold text-base text-[#1D1B20] dark:text-[#E6E1E5]">
+                <span className="font-extrabold text-base text-[#1D1B20] dark:text-[#E6E1E5] group-hover:text-[#6750A4] transition-colors">
                   AVANYX Store
                 </span>
-              </div>
+              </a>
               <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] max-w-sm leading-relaxed">
                 The official secure Android app marketplace, developer console, and student publishing platform.
               </p>
@@ -946,9 +1030,44 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
                 Marketplace
               </h4>
               <ul className="text-xs text-[#49454F] dark:text-[#CAC4D0] space-y-2">
-                <li><button onClick={() => { setCurrentTab('HOME'); onNavigate('/store'); }} className="hover:underline text-left">App Store Home</button></li>
-                <li><a href="#about" className="hover:underline">About AVANYX</a></li>
-                <li><a href="#categories" className="hover:underline">Categories</a></li>
+                <li>
+                  <a
+                    href="/store"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentTab('HOME');
+                      onNavigate('/store');
+                    }}
+                    className="hover:underline text-left block font-medium"
+                  >
+                    /store — App Store Home
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/about"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onNavigate('/about');
+                    }}
+                    className="hover:underline block font-medium"
+                  >
+                    /about — About AVANYX
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/faq"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onNavigate('/faq');
+                    }}
+                    className="hover:underline block font-medium"
+                  >
+                    /faq — Knowledge Base
+                  </a>
+                </li>
+                <li><a href="#categories" className="hover:underline block">Categories Directory</a></li>
               </ul>
             </div>
 
@@ -957,9 +1076,59 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
                 Developers
               </h4>
               <ul className="text-xs text-[#49454F] dark:text-[#CAC4D0] space-y-2">
-                <li><a href="#dev-console" className="hover:underline">Developer Console</a></li>
-                <li><a href="#student-publishing" className="hover:underline">Student Publishing</a></li>
-                <li><a href="#ai-pipeline" className="hover:underline">CyberShield AI</a></li>
+                <li>
+                  <a
+                    href="/developer-console"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentTab('DEV_CONSOLE');
+                      onNavigate('/developer-console');
+                    }}
+                    className="hover:underline block font-medium text-[#6750A4] dark:text-[#D0BCFF]"
+                  >
+                    /developer-console
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/student-console"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentTab('STUDENT_CONSOLE');
+                      onNavigate('/student-console');
+                    }}
+                    className="hover:underline block font-medium text-indigo-500 dark:text-indigo-400"
+                  >
+                    /student-console
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/developer/apply"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentTab('DEVELOPER_APPLY');
+                      onNavigate('/developer/apply');
+                    }}
+                    className="hover:underline block"
+                  >
+                    Apply for Developer
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/student/apply"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentTab('STUDENT_APPLY');
+                      onNavigate('/student/apply');
+                    }}
+                    className="hover:underline block"
+                  >
+                    Student Grants & Badges
+                  </a>
+                </li>
+                <li><a href="#ai-pipeline" className="hover:underline block">CyberShield AI Scanner</a></li>
               </ul>
             </div>
 
@@ -968,10 +1137,10 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
                 Legal & Security
               </h4>
               <ul className="text-xs text-[#49454F] dark:text-[#CAC4D0] space-y-2">
-                <li><a href="#security-privacy" className="hover:underline">Privacy Policy</a></li>
-                <li><a href="#terms" className="hover:underline">Terms & Conditions</a></li>
-                <li><a href="#faqs" className="hover:underline">Knowledge Base</a></li>
-                <li><a href="#contact" className="hover:underline">Contact Support</a></li>
+                <li><a href="#security-privacy" className="hover:underline block">Privacy Policy</a></li>
+                <li><a href="#terms" className="hover:underline block">Terms & Conditions</a></li>
+                <li><a href="#faqs" className="hover:underline block">Security FAQs</a></li>
+                <li><a href="#contact" className="hover:underline block">Contact Support</a></li>
               </ul>
             </div>
           </div>

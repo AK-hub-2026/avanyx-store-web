@@ -332,7 +332,7 @@ export const AppDetailsScreen: React.FC = () => {
       <div className="relative w-full aspect-[1024/500] max-h-[380px] rounded-[24px] overflow-hidden shadow-xl bg-[#1E1F23] border border-black/5 dark:border-white/5 group">
         <img
           src={selectedApp.bannerUrl || selectedApp.iconUrl}
-          alt={selectedApp.name}
+          alt={`${selectedApp.name} Feature Banner - AVANYX Store`}
           loading="lazy"
           decoding="async"
           className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
@@ -352,7 +352,7 @@ export const AppDetailsScreen: React.FC = () => {
         <div className="flex items-end gap-4">
           <img
             src={selectedApp.iconUrl}
-            alt={selectedApp.name}
+            alt={`${selectedApp.name} Application Icon - AVANYX Store`}
             className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover ring-4 ring-white dark:ring-[#121316] shadow-2xl bg-white dark:bg-[#1E1F23]"
             referrerPolicy="no-referrer"
           />
@@ -597,7 +597,7 @@ export const AppDetailsScreen: React.FC = () => {
               >
                 <img
                   src={thumb}
-                  alt={`thumb ${idx}`}
+                  alt={`${selectedApp.name} screenshot thumbnail ${idx + 1} - AVANYX Store`}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -893,7 +893,7 @@ export const AppDetailsScreen: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <img
                       src={rev.userAvatarUrl || `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(rev.userName)}`}
-                      alt={rev.userName}
+                      alt={`${rev.userName} - AVANYX Verified Reviewer Avatar`}
                       className="w-8 h-8 rounded-full object-cover bg-black/5"
                       referrerPolicy="no-referrer"
                     />

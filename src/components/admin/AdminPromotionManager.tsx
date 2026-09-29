@@ -344,7 +344,7 @@ export const AdminPromotionManager: React.FC<AdminPromotionManagerProps> = ({
                   <div className="flex items-start gap-3.5">
                     <div className="w-14 h-14 rounded-2xl bg-black/5 dark:bg-white/5 overflow-hidden shrink-0 border border-black/10 dark:border-white/10 flex items-center justify-center">
                       {req.appIcon ? (
-                        <img src={req.appIcon} alt="" className="w-full h-full object-cover" />
+                        <img src={req.appIcon} alt={`${req.appName || 'Promoted'} App Icon - AVANYX Store`} className="w-full h-full object-cover" />
                       ) : (
                         <Layers className="w-6 h-6 text-zinc-500" />
                       )}

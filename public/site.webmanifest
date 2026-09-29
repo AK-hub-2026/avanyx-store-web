@@ -1,7 +1,7 @@
 {
   "name": "AVANYX Store - Secure App Marketplace",
-  "short_name": "AVANYX",
-  "description": "Official app marketplace with native Android client, Store Profile, Developer Console, Student Publishing, AI verification pipeline, and malware-scanned APK downloads.",
+  "short_name": "AVANYX Store",
+  "description": "AVANYX Store is the official secure Android app marketplace featuring native APK downloads, Developer Console, Student Publishing, and AI verification.",
   "start_url": "/store",
   "scope": "/",
   "display": "standalone",
@@ -10,6 +10,12 @@
   "theme_color": "#6750A4",
   "categories": ["utilities", "games", "productivity", "developer tools"],
   "icons": [
+    {
+      "src": "/avanyx-store-logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any"
+    },
     {
       "src": "/avanyx-logo.svg",
       "sizes": "any",
@@ -25,9 +31,9 @@
   ],
   "screenshots": [
     {
-      "src": "/avanyx-logo.svg",
-      "sizes": "1280x720",
-      "type": "image/svg+xml",
+      "src": "/avanyx-store-preview.webp",
+      "sizes": "1200x675",
+      "type": "image/webp",
       "form_factor": "wide"
     }
   ]

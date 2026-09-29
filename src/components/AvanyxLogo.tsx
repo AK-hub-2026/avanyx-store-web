@@ -13,7 +13,7 @@ export const AvanyxLogo: React.FC<AvanyxLogoProps> = ({
   size = 36,
   showText = true,
   compact = false,
-  src = '/avanyx-logo.svg',
+  src = '/avanyx-store-logo.webp',
 }) => {
   const [imgError, setImgError] = useState(false);
 
@@ -28,13 +28,19 @@ export const AvanyxLogo: React.FC<AvanyxLogoProps> = ({
         }}
       >
         {!imgError ? (
-          <img
-            src={src}
-            alt="AVANYX"
-            className="w-full h-full object-contain rounded-2xl"
-            onError={() => setImgError(true)}
-            referrerPolicy="no-referrer"
-          />
+          <picture className="w-full h-full">
+            <source srcSet="/avanyx-store-logo.webp" type="image/webp" />
+            <source srcSet="/avanyx-logo.svg" type="image/svg+xml" />
+            <img
+              src={src}
+              alt="AVANYX Store Official Logo - Verified APK Marketplace"
+              className="w-full h-full object-contain rounded-2xl"
+              onError={() => setImgError(true)}
+              referrerPolicy="no-referrer"
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
         ) : (
           <svg
             viewBox="0 0 512 512"
