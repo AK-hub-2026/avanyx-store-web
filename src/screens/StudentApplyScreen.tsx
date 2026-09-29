@@ -1631,6 +1631,85 @@ export const StudentApplyScreen: React.FC<StudentApplyScreenProps> = ({ onBack }
         </>
       )}
 
+      {/* Student Developer Program Handbook, Academic Guidelines & FAQs */}
+      <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
+        <div className="p-8 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 shadow-xl space-y-6">
+          <div className="max-w-2xl space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-black uppercase">
+              <GraduationCap className="w-3.5 h-3.5" />
+              <span>Student Developer Handbook</span>
+            </div>
+            <h2 className="text-xl font-black text-[#1D1B20] dark:text-white">
+              Student Eligibility, Academic Verification & Publishing Guidelines
+            </h2>
+            <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+              Complete information regarding student developer accreditation, academic safeguards, and free app hosting benefits.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Eligibility Criteria</span>
+              </div>
+              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
+                <li>• Completed 10th standard or currently enrolled in secondary/higher education.</li>
+                <li>• Valid school/college ID card or 10th marksheet for academic verification.</li>
+                <li>• Active student email or institutional domain (if available).</li>
+                <li>• Adherence to the Student Developer Honor Code.</li>
+              </ul>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                <Award className="w-4 h-4 text-purple-400 shrink-0" />
+                <span>Verified Student Benefits</span>
+              </div>
+              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
+                <li>• 100% free application hosting on AVANYX Store.</li>
+                <li>• Official &quot;Verified Student&quot; badge on your studio profile.</li>
+                <li>• Publishing quota of up to 10 active release tracks.</li>
+                <li>• Campus showcase visibility and community portfolio sharing.</li>
+              </ul>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>Review & Accreditation</span>
+              </div>
+              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
+                <li>• Academic document verification processed within 24–48 hours.</li>
+                <li>• Drafts saved securely for 30 days via Application Token.</li>
+                <li>• Automated email confirmation upon verification.</li>
+                <li>• Seamless access to the AVANYX Student Console upon approval.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-black/5 dark:border-white/5 space-y-3">
+            <h3 className="font-extrabold text-sm text-[#1D1B20] dark:text-white">
+              Student Frequently Asked Questions
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1">
+                <strong className="text-[#1D1B20] dark:text-white block font-bold">What kinds of applications can students publish?</strong>
+                <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                  Students can publish utilities, study companions, open-source projects, school calculators, campus guides, or indie games. All apps must pass CyberShield security audits.
+                </p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1">
+                <strong className="text-[#1D1B20] dark:text-white block font-bold">What if my school/college board is not listed?</strong>
+                <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                  You can select &quot;Other&quot; from the board dropdown and enter your institution details manually. Our verification team reviews all accredited institutions globally.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Email OTP Modal */}
       <EmailOtpModal
         isOpen={isOtpModalOpen}

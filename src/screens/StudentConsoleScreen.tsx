@@ -149,31 +149,85 @@ export const StudentConsoleScreen: React.FC<StudentConsoleScreenProps> = ({ onEx
     }
   };
 
-  // 1. If not authenticated, prompt sign in
+  // 1. If not authenticated, prompt sign in with full academic program overview
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4 bg-[#F8F9FA] dark:bg-[#0B0F17] text-[#1D1B20] dark:text-white">
-        <div className="max-w-md w-full p-8 rounded-3xl bg-white dark:bg-[#131926] border border-black/10 dark:border-cyan-500/20 text-center space-y-6 shadow-2xl">
-          <div className="w-16 h-16 rounded-2xl bg-[#6750A4]/10 dark:bg-cyan-500/15 text-[#6750A4] dark:text-cyan-400 mx-auto flex items-center justify-center shadow-lg shadow-[#6750A4]/10 dark:shadow-cyan-500/20">
-            <GraduationCap className="w-8 h-8" />
+      <div className="min-h-[85vh] py-12 px-4 bg-[#F8F9FA] dark:bg-[#0B0F17] text-[#1D1B20] dark:text-white flex items-center justify-center">
+        <div className="max-w-2xl w-full p-8 sm:p-10 rounded-3xl bg-white dark:bg-[#131926] border border-black/10 dark:border-cyan-500/20 space-y-6 shadow-2xl">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-[#6750A4]/10 dark:bg-cyan-500/15 text-[#6750A4] dark:text-cyan-400 flex items-center justify-center shrink-0 shadow-lg shadow-[#6750A4]/10 dark:shadow-cyan-500/20">
+              <GraduationCap className="w-8 h-8" />
+            </div>
+            <div className="text-center sm:text-left space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 text-[11px] font-black uppercase">
+                <School className="w-3.5 h-3.5" />
+                <span>Academic Distribution Portal</span>
+              </div>
+              <h2 className="text-2xl font-black text-[#1D1B20] dark:text-white">AVANYX Student Console</h2>
+              <p className="text-xs text-[#49454F] dark:text-slate-400 leading-relaxed">
+                The official publishing hub for enrolled students (Class 10+ and University) to build developer portfolios, distribute educational tools, and share academic software with zero fees.
+              </p>
+            </div>
           </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-black text-[#1D1B20] dark:text-white">AVANYX Student Console</h2>
-            <p className="text-xs text-[#49454F] dark:text-slate-400 leading-relaxed">
-              Sign in with your student account or university credentials to access the academic APK sandbox and educational distribution portal.
-            </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+            <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#1A2234] border border-black/5 dark:border-white/5 space-y-1">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Zero Hosting Fees</span>
+              </div>
+              <p className="text-[11px] text-[#49454F] dark:text-slate-400 leading-relaxed">
+                Free APK distribution for up to 10 active academic releases per student account.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#1A2234] border border-black/5 dark:border-white/5 space-y-1">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1">
+                <ShieldCheck className="w-4 h-4 text-purple-400 shrink-0" />
+                <span>Verified Badge</span>
+              </div>
+              <p className="text-[11px] text-[#49454F] dark:text-slate-400 leading-relaxed">
+                Showcase an authenticated campus badge on your public software listings and developer profile.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#1A2234] border border-black/5 dark:border-white/5 space-y-1">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1">
+                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                <span>AutoSEO Engine</span>
+              </div>
+              <p className="text-[11px] text-[#49454F] dark:text-slate-400 leading-relaxed">
+                Automatic generation of Schema.org structured data, metadata tags, and search indexation.
+              </p>
+            </div>
           </div>
-          <button
-            onClick={() => {
-              setCurrentTab('LOGIN');
-              if (typeof window !== 'undefined' && window.history && window.history.pushState) {
-                window.history.pushState({}, '', '/login');
-              }
-            }}
-            className="w-full py-3 rounded-xl bg-[#6750A4] hover:bg-[#523e85] text-white font-black text-xs transition-all shadow-md shadow-[#6750A4]/25"
-          >
-            Sign In with AVANYX Account
-          </button>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+            <button
+              onClick={() => {
+                setCurrentTab('LOGIN');
+                if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                  window.history.pushState({}, '', '/login');
+                }
+              }}
+              className="w-full sm:flex-1 py-3.5 rounded-xl bg-[#6750A4] hover:bg-[#523e85] text-white font-black text-xs transition-all shadow-md shadow-[#6750A4]/25 flex items-center justify-center gap-2"
+            >
+              <span>Sign In with AVANYX Account</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={() => {
+                setCurrentTab('STUDENT_APPLY');
+                if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                  window.history.pushState({}, '', '/student/apply');
+                }
+              }}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-bold text-[#1D1B20] dark:text-white transition-all flex items-center justify-center gap-1.5"
+            >
+              <span>Apply for Student Verification</span>
+            </button>
+          </div>
         </div>
       </div>
     );

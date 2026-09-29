@@ -1,4 +1,5 @@
 import { StoreApp, NavigationTab, DeveloperProfile } from '../types';
+import { AVANYX_CORE_FAQS } from '../data/avanyxFaqData';
 
 export const PRIMARY_SEO_KEYWORDS = [
   'AVANYX Store',
@@ -193,10 +194,25 @@ export function generateTabSeoData(
     searchQuery?: string;
     developer?: DeveloperProfile | null;
     origin?: string;
+    path?: string;
   }
 ): SeoMetadataPackage {
   const origin = options?.origin || SITE_ORIGIN;
   const q = options?.searchQuery ? options.searchQuery.trim() : '';
+  const currentPath = options?.path || (typeof window !== 'undefined' ? window.location.pathname : '');
+
+  // Dynamic FAQ Schema generated strictly from verified visible FAQs
+  const fullFaqPageSchema = {
+    '@type': 'FAQPage',
+    'mainEntity': AVANYX_CORE_FAQS.map((faq) => ({
+      '@type': 'Question',
+      'name': faq.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': `${faq.a} ${faq.explanation}`
+      }
+    }))
+  };
 
   if (q) {
     return {
@@ -219,6 +235,124 @@ export function generateTabSeoData(
             'itemListElement': [
               { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
               { '@type': 'ListItem', 'position': 2, 'name': `Search "${q}"`, 'item': `${origin}/store?q=${encodeURIComponent(q)}` }
+            ]
+          }
+        ]
+      }
+    };
+  }
+
+  // Handle dedicated public routes like /about and /faq regardless of currentTab
+  if (currentPath === '/faq' || currentPath === '/faqs') {
+    return {
+      title: 'AVANYX Store - FAQ Knowledge Base & Verified Answers',
+      description: 'Explore verified answers to frequently asked questions about AVANYX Store, APK downloads, developer registration, student publishing, and AI verification.',
+      keywords: `FAQ, Knowledge Base, Android APK FAQs, Developer Help, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
+      canonicalUrl: `${origin}/faq`,
+      ogImage: `${origin}/avanyx-store-banner.webp`,
+      ogType: 'website',
+      jsonLdSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          fullFaqPageSchema,
+          {
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+              { '@type': 'ListItem', 'position': 2, 'name': 'FAQ Knowledge Base', 'item': `${origin}/faq` }
+            ]
+          }
+        ]
+      }
+    };
+  }
+
+  if (currentPath === '/about') {
+    return {
+      title: 'AVANYX Store - About the Open Android App Marketplace & Ecosystem',
+      description: 'Learn about AVANYX Store, an independent Android app marketplace providing direct APK downloads, 0% developer fees, and AI security scanning.',
+      keywords: `About AVANYX, App Store History, Mission, Independent Marketplace, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
+      canonicalUrl: `${origin}/about`,
+      ogImage: `${origin}/avanyx-store-banner.webp`,
+      ogType: 'website',
+      jsonLdSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'Organization',
+            'name': 'AVANYX Store',
+            'url': origin,
+            'logo': `${origin}/avanyx-store-logo.webp`,
+            'description': 'Independent Android app marketplace with native client, Developer Console, and Student Publishing.',
+            'sameAs': [
+              'https://twitter.com/avanyxstore',
+              'https://github.com/avanyxstore'
+            ]
+          },
+          {
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+              { '@type': 'ListItem', 'position': 2, 'name': 'About AVANYX', 'item': `${origin}/about` }
+            ]
+          },
+          fullFaqPageSchema
+        ]
+      }
+    };
+  }
+
+  if (tab === 'DEV_CONSOLE' || currentPath === '/developer-console' || currentPath === '/developer') {
+    return {
+      title: 'AVANYX Store - Developer Console & Android App Publishing Portal',
+      description: 'AVANYX Developer Console enables verified software creators to submit Android APK packages, inspect AI security audits, manage release tracks, and view download analytics.',
+      keywords: `Developer Console, Android Publishing, Upload APK, Release Tracks, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
+      canonicalUrl: `${origin}/developer-console`,
+      ogImage: `${origin}/avanyx-store-banner.webp`,
+      ogType: 'website',
+      jsonLdSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebPage',
+            'name': 'AVANYX Developer Console',
+            'url': `${origin}/developer-console`,
+            'description': 'Administrative portal for Android app publishing and release management.'
+          },
+          {
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Developer Console', 'item': `${origin}/developer-console` }
+            ]
+          }
+        ]
+      }
+    };
+  }
+
+  if (tab === 'STUDENT_CONSOLE' || currentPath === '/student-console' || currentPath === '/student') {
+    return {
+      title: 'AVANYX Store - Student Developer Console & Academic Publishing Hub',
+      description: 'AVANYX Student Console offers verified student developers a dedicated portal to publish academic Android apps, manage release packages, and build portfolios with zero fees.',
+      keywords: `Student Console, Academic Publishing, Student Developer Program, ${PRIMARY_SEO_KEYWORDS.join(', ')}`,
+      canonicalUrl: `${origin}/student-console`,
+      ogImage: `${origin}/avanyx-store-banner.webp`,
+      ogType: 'website',
+      jsonLdSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebPage',
+            'name': 'AVANYX Student Console',
+            'url': `${origin}/student-console`,
+            'description': 'Student publishing portal for academic projects and early developer portfolios.'
+          },
+          {
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'AVANYX Store', 'item': `${origin}/store` },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Student Console', 'item': `${origin}/student-console` }
             ]
           }
         ]
@@ -258,7 +392,8 @@ export function generateTabSeoData(
                 { '@type': 'ListItem', 'position': 4, 'name': 'About AVANYX', 'item': `${origin}/about` },
                 { '@type': 'ListItem', 'position': 5, 'name': 'Frequently Asked Questions', 'item': `${origin}/faq` }
               ]
-            }
+            },
+            fullFaqPageSchema
           ]
         }
       };
@@ -366,7 +501,39 @@ export function generateTabSeoData(
             {
               '@type': 'WebPage',
               'name': 'Developer Program Application - AVANYX Store',
-              'url': `${origin}/developer/apply`
+              'url': `${origin}/developer/apply`,
+              'description': 'Official portal to apply for verified developer publishing rights on AVANYX Store.'
+            },
+            {
+              '@type': 'HowTo',
+              'name': 'How to Apply for AVANYX Developer Verification',
+              'description': 'Step-by-step verification process for independent Android developers and software publishers on AVANYX Store.',
+              'step': [
+                {
+                  '@type': 'HowToStep',
+                  'position': 1,
+                  'name': 'Provide Legal & Studio Identity',
+                  'text': 'Enter your legal name, studio or organization name, support email, and primary country.'
+                },
+                {
+                  '@type': 'HowToStep',
+                  'position': 2,
+                  'name': 'Verify Phone & Email 2FA',
+                  'text': 'Complete one-time passcode verification for two-factor publisher authentication.'
+                },
+                {
+                  '@type': 'HowToStep',
+                  'position': 3,
+                  'name': 'Submit Identity & Agree to Distribution Terms',
+                  'text': 'Complete identity verification and agree to the 0% commission AVANYX Developer Agreement.'
+                },
+                {
+                  '@type': 'HowToStep',
+                  'position': 4,
+                  'name': 'Admin Review & Developer Console Access',
+                  'text': 'Receive approval within 24–48 hours to start uploading APK packages.'
+                }
+              ]
             },
             {
               '@type': 'BreadcrumbList',
@@ -394,7 +561,39 @@ export function generateTabSeoData(
             {
               '@type': 'WebPage',
               'name': 'Student Publishing Program - AVANYX Store',
-              'url': `${origin}/student/apply`
+              'url': `${origin}/student/apply`,
+              'description': 'Dedicated publishing pathway for enrolled students with free app hosting.'
+            },
+            {
+              '@type': 'HowTo',
+              'name': 'How to Apply for the AVANYX Student Developer Program',
+              'description': 'Verification process for secondary and university students to access free Android app publishing.',
+              'step': [
+                {
+                  '@type': 'HowToStep',
+                  'position': 1,
+                  'name': 'Academic Enrollment Proof',
+                  'text': 'Provide your school or university name, academic board, degree program, and graduation year.'
+                },
+                {
+                  '@type': 'HowToStep',
+                  'position': 2,
+                  'name': 'Document Verification',
+                  'text': 'Upload a valid student ID card or 10th standard certificate for enrollment confirmation.'
+                },
+                {
+                  '@type': 'HowToStep',
+                  'position': 3,
+                  'name': 'Honor Code Confirmation',
+                  'text': 'Agree to the Student Developer Honor Code to guarantee ethical, malware-free publishing.'
+                },
+                {
+                  '@type': 'HowToStep',
+                  'position': 4,
+                  'name': 'Student Console Access',
+                  'text': 'Receive verified student badge and free hosting quota of up to 10 active release tracks.'
+                }
+              ]
             },
             {
               '@type': 'BreadcrumbList',

@@ -544,6 +544,87 @@ export const HomeScreen: React.FC = () => {
               ))}
             </div>
           </section>
+
+          {/* 6. ABOUT AVANYX STORE & DIRECT APK DOWNLOADS FOOTER OVERVIEW */}
+          <section className="mt-12 pt-8 border-t border-black/5 dark:border-white/5 space-y-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 shadow-sm space-y-5">
+              <div className="max-w-2xl space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Trusted Mobile Software Distribution</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-[#1D1B20] dark:text-white">
+                  About AVANYX Store Android App Marketplace
+                </h3>
+                <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                  AVANYX Store is an independent Android application marketplace built to provide open, malware-scanned software distribution with zero telemetry and zero mandatory account registration.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                  <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                    <Download className="w-4 h-4 text-emerald-500" />
+                    <span>Direct APK Downloads</span>
+                  </div>
+                  <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                    Download verified Android packages directly to phones, tablets, or emulators over encrypted TLS 1.3 connections without proprietary app stores.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                  <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF]" />
+                    <span>CyberShield Security</span>
+                  </div>
+                  <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                    Every package is scanned through automated bytecode decompilation, sandbox runtime execution, and NIST FIPS 180-4 SHA-256 integrity hashing.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                  <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                    <GraduationCap className="w-4 h-4 text-indigo-500" />
+                    <span>Creator Publishing Hub</span>
+                  </div>
+                  <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                    Indie developers publish with 0% platform commission via the Developer Console. Enrolled students publish academic projects via the Student Console.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-wrap items-center gap-3 text-xs font-bold text-[#6750A4] dark:text-[#D0BCFF]">
+                <button
+                  onClick={() => {
+                    setCurrentTab('INTRO');
+                    if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                      window.history.pushState({}, '', '/about');
+                    }
+                  }}
+                  className="hover:underline flex items-center gap-1"
+                >
+                  <span>Learn More About AVANYX</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                <button
+                  onClick={() => {
+                    setCurrentTab('INTRO');
+                    if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                      window.history.pushState({}, '', '/faq');
+                    }
+                  }}
+                  className="hover:underline"
+                >
+                  Knowledge Base (FAQ)
+                </button>
+                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                <a href="/site.webmanifest" className="hover:underline">
+                  PWA Manifest
+                </a>
+              </div>
+            </div>
+          </section>
         </>
       )}
     </div>

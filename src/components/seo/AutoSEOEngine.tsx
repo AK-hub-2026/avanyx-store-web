@@ -23,7 +23,8 @@ export const AutoSEOEngine: React.FC = () => {
       const tabSeo = generateTabSeoData(currentTab, {
         searchQuery,
         developer: selectedDeveloper,
-        origin
+        origin,
+        path: window.location.pathname
       });
       applySeoMetadataToDOM(tabSeo);
     }

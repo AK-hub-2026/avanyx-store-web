@@ -1814,6 +1814,85 @@ export const DeveloperApplyScreen: React.FC<DeveloperApplyScreenProps> = ({ onBa
         </>
       )}
 
+      {/* Developer Verification Handbook, Program Guidelines & FAQs */}
+      <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
+        <div className="p-8 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 shadow-xl space-y-6">
+          <div className="max-w-2xl space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] text-xs font-black uppercase">
+              <Terminal className="w-3.5 h-3.5" />
+              <span>Publisher Handbook</span>
+            </div>
+            <h2 className="text-xl font-black text-[#1D1B20] dark:text-white">
+              Developer Eligibility, Verification Standards & Guidelines
+            </h2>
+            <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+              Everything you need to know about publishing on AVANYX Store, platform standards, and identity verification.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Eligibility Requirements</span>
+              </div>
+              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
+                <li>• Must be 18 years of age or older.</li>
+                <li>• Provide official government identity for KYC validation.</li>
+                <li>• Valid email and phone number for 2FA security.</li>
+                <li>• Agree to AVANYX Developer Distribution Agreement.</li>
+              </ul>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF] shrink-0" />
+                <span>Review & SLA Timeline</span>
+              </div>
+              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
+                <li>• Automated identity check: Instant verification.</li>
+                <li>• Admin profile review: Within 24 to 48 hours.</li>
+                <li>• Draft applications saved for 30 days via token.</li>
+                <li>• Email and SMS status notifications upon approval.</li>
+              </ul>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
+              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                <span>Platform Rights & Fees</span>
+              </div>
+              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
+                <li>• 0% commission on free and open-source software.</li>
+                <li>• 100% intellectual property rights retained by creator.</li>
+                <li>• Direct APK distribution with SHA-256 signing.</li>
+                <li>• Real-time download metrics and crash diagnostics.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-black/5 dark:border-white/5 space-y-3">
+            <h3 className="font-extrabold text-sm text-[#1D1B20] dark:text-white">
+              Developer Frequently Asked Questions
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1">
+                <strong className="text-[#1D1B20] dark:text-white block font-bold">Can I publish Android apps under a studio name?</strong>
+                <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                  Yes, you can register as an independent developer or enter your official studio/organization name. Both will appear with verified status on store listings.
+                </p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1">
+                <strong className="text-[#1D1B20] dark:text-white block font-bold">What happens if my application draft expires?</strong>
+                <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                  Drafts are saved securely for 30 days using your unique Application Token. You can resume anytime using the &quot;Resume Existing Application&quot; button above.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Email OTP Verification Modal */}
       <EmailOtpModal
         isOpen={isOtpModalOpen}

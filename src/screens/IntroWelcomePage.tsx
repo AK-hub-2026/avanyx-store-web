@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { AvanyxLogo } from '../components/AvanyxLogo';
 import { AppCard } from '../components/AppCard';
+import { AutoSEOEngine } from '../components/seo/AutoSEOEngine';
+import { AVANYX_CORE_FAQS } from '../data/avanyxFaqData';
 import {
   ShieldCheck,
   Sparkles,
@@ -89,109 +91,8 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
     setTimeout(() => setContactSent(false), 6000);
   };
 
-  // 25 Comprehensive SEO & AI Search FAQs
-  const faqs = [
-    {
-      q: 'What is AVANYX Store?',
-      a: 'AVANYX Store is an official, open, and cryptographically secure Android application marketplace and developer distribution hub. It features verified APK downloads, a native Android client, a Developer Console, a free Student Publishing Program, and an automated AI security verification pipeline.'
-    },
-    {
-      q: 'How does AVANYX Store guarantee APK safety and malware prevention?',
-      a: 'Every package submitted to AVANYX Store undergoes CyberShield 4-tier security auditing: static bytecode decompilation, isolated Linux/Android sandbox execution, malware signature scanning, SHA-256 checksum verification, and automated AI permission analysis.'
-    },
-    {
-      q: 'Can I download APKs without creating an account or signing in?',
-      a: 'Yes! Guest users can freely browse, search, and download verified APKs and desktop packages with zero registration required. Accounts are only needed if you wish to write reviews, track update histories, or publish apps.'
-    },
-    {
-      q: 'What is the AVANYX Developer Console?',
-      a: 'The AVANYX Developer Console is a professional portal where software developers can register, upload APK binaries, configure release tracks, view download analytics, manage versions, and distribute Android applications to a global audience with zero forced revenue commissions.'
-    },
-    {
-      q: 'How does Student App Publishing work on AVANYX Store?',
-      a: 'Verified students enrolled in accredited schools or universities receive 100% free developer accounts, zero publishing fees, access to AVANYX SDK preview tools, and eligibility for annual developer grants and hackathons.'
-    },
-    {
-      q: 'What are the requirements for publishing Android apps on AVANYX Store?',
-      a: 'Publishers must submit compiled APK packages with valid Android manifest metadata, SHA-256 signatures, clear descriptions, and icon assets. Submitted apps must comply with AVANYX Content Policies and pass the CyberShield AI security scan.'
-    },
-    {
-      q: 'What is Bomb Rush 3D on AVANYX Store?',
-      a: 'Bomb Rush 3D is a featured high-FPS action game available on AVANYX Store. It provides fast-paced 3D arcade combat, offline gameplay support, and verified malware-free installation.'
-    },
-    {
-      q: 'What is AVANYX AutoPDF?',
-      a: 'AVANYX AutoPDF is a popular productivity application available on AVANYX Store. It offers automated PDF document generation, OCR text extraction, offline file conversion, and zero telemetry.'
-    },
-    {
-      q: 'How does the AI Verification Pipeline work for new app uploads?',
-      a: 'When an app is uploaded, the automated AI verification engine analyzes the manifest permissions, network socket calls, decompiled DEX bytecode, and developer domain reputation to assign a trust verification score before public publishing.'
-    },
-    {
-      q: 'How are titles, meta descriptions, and keywords generated for published apps?',
-      a: 'AVANYX Store includes an Auto SEO Engine that automatically generates search engine titles, meta descriptions, canonical URLs, Open Graph tags, Twitter cards, and SoftwareApplication JSON-LD structured data immediately upon app publishing.'
-    },
-    {
-      q: 'Is AVANYX Store free for indie Android developers?',
-      a: 'Yes. AVANYX Store supports indie Android developers by providing free app hosting, zero hidden fees, direct APK distribution, and organic discovery across search engines and AI search assistants.'
-    },
-    {
-      q: 'What limitations apply to student developer accounts?',
-      a: 'Student developer accounts enjoy full publishing capabilities with standard rate limits (up to 10 active package releases per account) to maintain ecosystem security while providing free educational hosting.'
-    },
-    {
-      q: 'How does AVANYX Store protect user privacy?',
-      a: 'AVANYX Store operates under a strict Zero Telemetry policy. We do not track user device locations, sell personal data to advertisers, or inject third-party ad tracking SDKs into downloaded binaries.'
-    },
-    {
-      q: 'What is AVANYX Identity?',
-      a: 'AVANYX Identity is an OAuth 2.0 / OIDC single sign-on framework that allows users to securely log into AVANYX Store, sync app updates across devices, and manage developer security keys using industry-standard PKCE tokens.'
-    },
-    {
-      q: 'Can I install AVANYX Store as a Progressive Web App (PWA)?',
-      a: 'Yes! AVANYX Store supports full PWA compliance. You can install it directly to your Android home screen or desktop taskbar for offline catalog browsing and background updates.'
-    },
-    {
-      q: 'What content is prohibited on AVANYX Store?',
-      a: 'Prohibited content includes malware, spyware, unauthorized cryptominers, phishing apps, stolen copyright material, predatory adware, and software that violates user consent.'
-    },
-    {
-      q: 'How are SHA-256 checksums verified during APK downloads?',
-      a: 'Each APK file has a unique cryptographic SHA-256 hash calculated upon upload. When downloading through the store, the client verifies that the downloaded binary exactly matches the server checksum.'
-    },
-    {
-      q: 'How fast are APK downloads on AVANYX Store?',
-      a: 'Downloads are served through global CDN edge mirrors with sub-50ms initial latency and high-speed multi-threaded download support.'
-    },
-    {
-      q: 'How do AI search engines like Gemini, ChatGPT, and Perplexity index AVANYX Store?',
-      a: 'AVANYX Store uses structured FAQPage JSON-LD schemas, semantic HTML headers, clean canonical URLs, and public sitemaps allowing AI search engines to accurately ground and reference store applications.'
-    },
-    {
-      q: 'What app categories are available on AVANYX Store?',
-      a: 'Categories include Productivity, Tools, Security, Games, AI Agents, Education, Media, Social, Entertainment, Finance, Health, Shopping, Lifestyle, Creativity, Business, and Utilities.'
-    },
-    {
-      q: 'How do I update an existing app in the Developer Console?',
-      a: 'Registered developers can log into the Developer Console, select their application, upload a new APK binary with an incremented version code, update changelog notes, and publish instantly.'
-    },
-    {
-      q: 'Does AVANYX Store charge any commission on free or paid apps?',
-      a: 'No. AVANYX Store charges 0% commission on free apps and open-source distribution. Developers retain complete ownership of their intellectual property.'
-    },
-    {
-      q: 'What happens if a security vulnerability is reported in a published app?',
-      a: 'Our security response team reviews reports within 24 hours. If a package fails re-audit, it is temporarily quarantined and the developer is notified to issue a patched release.'
-    },
-    {
-      q: 'Can I use AVANYX Store on a desktop PC or Mac?',
-      a: 'Yes! You can browse the web catalog on any modern browser, download desktop binaries or APKs for Android emulators, and access documentation on Windows, macOS, or Linux.'
-    },
-    {
-      q: 'How can I contact AVANYX Store Developer Relations?',
-      a: 'You can submit a ticket directly using the interactive contact form on this documentation page or email support@avanyx.io for partnership, security, or developer support inquiries.'
-    }
-  ];
+  // Comprehensive SEO, GEO & AI Search Verified Knowledge Base
+  const faqs = AVANYX_CORE_FAQS;
 
   const filteredFaqs = faqs.filter(
     (f) =>
@@ -419,6 +320,176 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
       {/* Main Content Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-16 space-y-24">
         {/* ───────────────────────────────────────────────────────────── */}
+        {/* 1.5. KEY TAKEAWAYS: AVANYX STORE AT A GLANCE */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        <section id="key-takeaways" className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[#6750A4]/10 via-white to-emerald-500/10 dark:from-[#221C35] dark:via-[#18191D] dark:to-[#122822] border border-[#6750A4]/25 shadow-xl scroll-mt-24 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-5">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] text-xs font-black uppercase">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Executive Overview</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#1D1B20] dark:text-white">
+                Key Takeaways: AVANYX Store at a Glance
+              </h2>
+            </div>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full border border-emerald-500/20 self-start sm:self-auto">
+              Verified Independent Marketplace
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0]">
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-[#1D1B20] dark:text-white block font-bold mb-0.5">Independent Android Marketplace</strong>
+                <span>AVANYX Store is an open, independent mobile software marketplace built to provide direct distribution of Android apps without mandatory account walls or monopoly publisher fees.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-[#1D1B20] dark:text-white block font-bold mb-0.5">Direct APK Downloads for Users</strong>
+                <span>Users can discover and download compiled Android APK packages directly to devices or emulators with zero tracking, zero injected adware, and full cryptographic validation.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-[#1D1B20] dark:text-white block font-bold mb-0.5">Dedicated Developer Console (0% Commission)</strong>
+                <span>Software developers can register, submit compiled APK packages, inspect security logs, manage release channels, and monitor real-time telemetry with 0% platform fee on free applications.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-[#1D1B20] dark:text-white block font-bold mb-0.5">Zero-Cost Student Publishing Program</strong>
+                <span>Eligible secondary and university students receive free application hosting, academic verification badges, and portfolio distribution via the Student Console with standard rate safeguards.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-[#1D1B20] dark:text-white block font-bold mb-0.5">Automated AutoSEO Metadata Optimization</strong>
+                <span>Application metadata, Schema.org SoftwareApplication JSON-LD schemas, OpenGraph cards, and canonical links are dynamically generated to ensure immediate discoverability in search engines and AI models.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-[#1D1B20] dark:text-white block font-bold mb-0.5">CyberShield 4-Tier Security & NIST SHA-256</strong>
+                <span>All binaries are scanned via bytecode decompilation, sandbox runtime execution, AI permission heuristics, and NIST FIPS 180-4 cryptographic SHA-256 checksum verification.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* 1.8. CLEAR DEFINITIONS & CITABILITY (AI SEARCH GROUNDING) */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        <section id="definitions" className="space-y-8 scroll-mt-24">
+          <div className="max-w-3xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6750A4]/10 dark:bg-[#6750A4]/20 text-[#6750A4] dark:text-[#D0BCFF] text-xs font-black uppercase">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Authoritative Knowledge Base</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-[#1D1B20] dark:text-[#E6E1E5]">
+              Clear Entity Definitions & Platform Scope
+            </h2>
+            <p className="text-sm sm:text-base text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+              Standardized, quotable definitions for users, developers, researchers, and AI search engines detailing the core architecture of the AVANYX Store ecosystem.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Globe2 className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF]" />
+                <span>What is AVANYX Store?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                <strong>AVANYX Store</strong> is an independent Android application marketplace and software distribution platform where users discover verified apps and developers publish software directly. It delivers clean, telemetry-free APK downloads with integrated security audits.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-emerald-500" />
+                <span>What does AVANYX Store do?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                AVANYX Store hosts, indexes, and distributes Android software packages. It validates application integrity through automated security pipelines, generates standardized search metadata, and connects independent developers and students with a worldwide user base.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Users className="w-4 h-4 text-indigo-500" />
+                <span>Who is AVANYX Store for?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                AVANYX Store is designed for mobile users seeking trustworthy APK downloads without forced account registration, independent software publishers seeking 0% commission distribution, and students seeking verified academic software hosting.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF]" />
+                <span>What is AVANYX Developer Console?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                <strong>AVANYX Developer Console</strong> is the administrative portal that allows verified software developers to upload Android APK packages, configure releases, monitor analytics, and manage application listings with zero publisher fees on free software.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-purple-500" />
+                <span>What is AVANYX Student Console?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                <strong>AVANYX Student Console</strong> is a dedicated publishing interface designed for enrolled students to distribute academic software projects, utilities, and portfolio apps with zero platform fees, verified campus badges, and rate-limited infrastructure.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <span>What is an AI-Verified APK?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                An <strong>AI-verified APK</strong> is an Android application package that has successfully passed automated static bytecode inspection, runtime sandbox emulation, permission audits, and cryptographic SHA-256 checksum verification on AVANYX Store.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>What is AutoSEOEngine?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                <strong>AutoSEOEngine</strong> is the built-in metadata optimization system in AVANYX Store that automatically generates search engine titles, descriptions, canonical links, Open Graph cards, and Schema.org structured data for published applications upon release.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-2 shadow-sm">
+              <h3 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Layers className="w-4 h-4 text-cyan-500" />
+                <span>What is the AVANYX App Marketplace?</span>
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                The <strong>AVANYX Store app marketplace</strong> is the public web and native catalog where users browse, search, and download verified Android applications and games directly without mandatory account registration or invasive behavioral telemetry.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────────────────────────────────────────────────────────── */}
         {/* 2. ABOUT AVANYX STORE */}
         {/* ───────────────────────────────────────────────────────────── */}
         <section id="about" className="space-y-8 scroll-mt-24">
@@ -565,6 +636,188 @@ export const IntroWelcomePage: React.FC<IntroWelcomePageProps> = ({ onNavigate }
               <h3 className="font-bold text-sm text-white">AI Permission Scanner</h3>
               <p className="text-xs text-[#CAC4D0] leading-relaxed">
                 Gemini-powered evaluation checks requested Android permissions against app descriptions to flag suspicious access patterns.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* 4.5. HOW IT WORKS: OPERATIONAL GUIDES & WORKFLOWS */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        <section id="how-it-works" className="space-y-8 scroll-mt-24">
+          <div className="max-w-3xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-black uppercase">
+              <Compass className="w-3.5 h-3.5" />
+              <span>Step-by-Step Operations</span>
+            </div>
+            <h2 className="text-3xl font-black text-[#1D1B20] dark:text-white">
+              How AVANYX Store Works: Step-by-Step Guides
+            </h2>
+            <p className="text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+              Transparent workflows for application discovery, software publishing, security audits, and metadata optimization.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Guide 1: How users discover & download apps */}
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-4 shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-sm">
+                01
+              </div>
+              <h3 className="font-extrabold text-base text-[#1D1B20] dark:text-white">
+                How Users Discover & Download Apps
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Users can browse categories or use instant search at <code className="text-[#6750A4] dark:text-[#D0BCFF]">/store</code>. Every app listing details verified package sizes, version history, developer identity, and SHA-256 signatures. Clicking &quot;Download APK&quot; pulls the audited binary directly over TLS 1.3 with no forced registration or interstitial ads.
+              </p>
+            </div>
+
+            {/* Guide 2: How developers publish Android apps */}
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-4 shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] flex items-center justify-center font-black text-sm">
+                02
+              </div>
+              <h3 className="font-extrabold text-base text-[#1D1B20] dark:text-white">
+                How Developers Publish Android Apps
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Developers aged 18+ apply via <code className="text-[#6750A4] dark:text-[#D0BCFF]">/developer/apply</code>. Once approved, the Developer Console allows publishers to upload compiled APK packages, set release notes, manage rollout percentages, view real-time download telemetry, and update listings with 0% platform fees.
+              </p>
+            </div>
+
+            {/* Guide 3: How student publishing works */}
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-4 shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center font-black text-sm">
+                03
+              </div>
+              <h3 className="font-extrabold text-base text-[#1D1B20] dark:text-white">
+                How Student Publishing Works
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Students apply via <code className="text-indigo-500">/student/apply</code> by verifying current school or university status (10th standard or higher). Verified student accounts receive free app hosting quotas (up to 10 active releases), student community spotlighting, and verified campus checkmarks.
+              </p>
+            </div>
+
+            {/* Guide 4: How application verification works */}
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-4 shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-black text-sm">
+                04
+              </div>
+              <h3 className="font-extrabold text-base text-[#1D1B20] dark:text-white">
+                How Application Verification Works
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                When an APK is submitted, CyberShield decompiles DEX bytecode, reviews AndroidManifest permissions, checks background receivers, and executes the package in an automated Android sandbox to observe socket connections and rule out malicious behavioral patterns before public approval.
+              </p>
+            </div>
+
+            {/* Guide 5: How APK integrity is checked (SHA-256) */}
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-4 shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center font-black text-sm">
+                05
+              </div>
+              <h3 className="font-extrabold text-base text-[#1D1B20] dark:text-white">
+                How APK Integrity is Checked
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Every release binary is hashed upon upload using the NIST FIPS 180-4 cryptographic standard. The generated 256-bit hexadecimal checksum is stored in Firestore and published publicly on the app page, allowing users and automated agents to independently verify that zero tampering occurred.
+              </p>
+            </div>
+
+            {/* Guide 6: How AutoSEO works */}
+            <div className="p-6 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-4 shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-rose-500/15 text-rose-500 flex items-center justify-center font-black text-sm">
+                06
+              </div>
+              <h3 className="font-extrabold text-base text-[#1D1B20] dark:text-white">
+                How AutoSEO Works
+              </h3>
+              <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                AutoSEOEngine automatically monitors published apps and extracts title strings, version numbers, tags, and category taxonomies. It injects semantic Schema.org SoftwareApplication JSON-LD blocks, BreadcrumbList schemas, and Open Graph tags directly into page headers for instant search engine indexing.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* 4.7. DATA, SPECIFICATIONS & TECHNICAL STANDARDS CITATIONS */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        <section id="specifications" className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 space-y-6 shadow-sm scroll-mt-24">
+          <div className="max-w-3xl space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] text-xs font-black uppercase">
+              <Server className="w-3.5 h-3.5" />
+              <span>Verifiable Standards & Specifications</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-[#1D1B20] dark:text-white">
+              Platform Architecture & Verifiable Technical Citations
+            </h2>
+            <p className="text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+              AVANYX Store implements open industry standards and verified protocols across mobile runtime security, cryptography, and web distribution.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-[#6750A4] dark:text-[#D0BCFF] uppercase">Standard: AOSP</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">Android Open Source Project</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Full compliance with AOSP APK package specifications, DEX bytecode layout, and standard Android permission models.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-emerald-500 uppercase">Standard: NIST FIPS 180-4</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">SHA-256 Cryptography</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Cryptographic checksum calculation adheres to NIST FIPS 180-4 specifications for 256-bit collision-resistant package hashing.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-indigo-500 uppercase">Standard: RFC 8446</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">TLS 1.3 Transport Security</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                All client downloads and API routes operate strictly over modern TLS 1.3 with Forward Secrecy and 0-RTT session resumption.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-purple-400 uppercase">Standard: RFC 9116</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">Vulnerability Disclosure</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Active security.txt published under RFC 9116 providing standardized disclosure channels for security researchers at /security.txt.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-amber-500 uppercase">Standard: W3C PWA</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">Web App Manifest</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Full Progressive Web App compatibility under W3C specification with offline catalog caching and home screen installability.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-rose-500 uppercase">Standard: Schema.org</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">Structured Data Microdata</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Dynamic generation of SoftwareApplication, BreadcrumbList, FAQPage, Organization, and WebSite JSON-LD graph models.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-cyan-500 uppercase">Policy: 0% Revenue Fee</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">Zero Commission Guarantee</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Independent developers and student creators retain 100% rights and pay 0% fees for free and open-source software distribution.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+              <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">SLA: 99.9% Uptime</span>
+              <h4 className="font-extrabold text-[#1D1B20] dark:text-white text-xs">High-Availability Cloud Edge</h4>
+              <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+                Cloud Run serverless containers paired with global edge caching deliver sub-50ms TTFB across worldwide release mirrors.
               </p>
             </div>
           </div>
