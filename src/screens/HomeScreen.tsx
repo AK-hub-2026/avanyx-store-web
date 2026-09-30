@@ -20,7 +20,10 @@ import {
   CheckCircle2,
   TrendingUp,
   Cpu,
-  Smartphone
+  Smartphone,
+  Globe2,
+  Terminal,
+  Lock
 } from 'lucide-react';
 
 export const HomeScreen: React.FC = () => {
@@ -154,6 +157,18 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <div className="space-y-10 pb-16 selection:bg-[#6750A4]/20 selection:text-[#6750A4]">
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 0. STORE HEADER WITH CANONICAL H1 & DIRECT DEFINITION */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <header className="space-y-2">
+        <h1 className="text-2xl sm:text-3xl font-black text-[#1D1B20] dark:text-white tracking-tight">
+          AVANYX Store: Android App Marketplace
+        </h1>
+        <p className="text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0] max-w-3xl leading-relaxed">
+          AVANYX Store is an independent Android application marketplace and developer publishing platform providing direct APK downloads with zero telemetry and verified package integrity.
+        </p>
+      </header>
+
       {/* ───────────────────────────────────────────────────────────── */}
       {/* STORE SEARCH & CATEGORY BAR */}
       {/* ───────────────────────────────────────────────────────────── */}
@@ -545,57 +560,151 @@ export const HomeScreen: React.FC = () => {
             </div>
           </section>
 
-          {/* 6. ABOUT AVANYX STORE & DIRECT APK DOWNLOADS FOOTER OVERVIEW */}
-          <section className="mt-12 pt-8 border-t border-black/5 dark:border-white/5 space-y-6">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 shadow-sm space-y-5">
-              <div className="max-w-2xl space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Trusted Mobile Software Distribution</span>
+          {/* 6. ABOUT AVANYX STORE & ANDROID APP MARKETPLACE EXPLANATORY HUB */}
+          <section className="mt-12 pt-8 border-t border-black/5 dark:border-white/5 space-y-8">
+            <div className="p-6 sm:p-10 rounded-3xl bg-white dark:bg-[#18191D] border border-black/5 dark:border-white/5 shadow-sm space-y-8">
+              {/* Key Takeaways */}
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-[#6750A4]/10 via-[#F8F9FA] to-emerald-500/10 dark:from-[#221C35] dark:via-[#1E1F23] dark:to-[#122822] border border-[#6750A4]/20 space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] text-[11px] font-black uppercase">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Key Takeaways</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-black text-[#1D1B20] dark:text-white">
-                  About AVANYX Store Android App Marketplace
-                </h3>
-                <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
-                  AVANYX Store is an independent Android application marketplace built to provide open, malware-scanned software distribution with zero telemetry and zero mandatory account registration.
-                </p>
+                <h2 className="text-xl font-black text-[#1D1B20] dark:text-white">
+                  AVANYX Store Overview at a Glance
+                </h2>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs text-[#49454F] dark:text-[#CAC4D0]">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span><strong>Independent Distribution:</strong> Open Android software marketplace for direct, telemetry-free APK downloads.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span><strong>Direct Downloads:</strong> Users can download verified APK packages directly to devices without mandatory account sign-in.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span><strong>Developer Freedom:</strong> Independent publishers distribute Android apps via the Developer Console with 0% platform fee on free software.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span><strong>Academic Support:</strong> Eligible secondary and college students access free hosting via the Student Console.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span><strong>Cryptographic Integrity:</strong> Every binary is audited via CyberShield and validated against NIST FIPS 180-4 SHA-256 signatures.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span><strong>Standards-Compliant:</strong> Fully compatible with AOSP Android package guidelines, W3C PWA standards, and TLS 1.3 transport encryption.</span>
+                  </li>
+                </ul>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
-                  <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
-                    <Download className="w-4 h-4 text-emerald-500" />
-                    <span>Direct APK Downloads</span>
-                  </div>
-                  <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
-                    Download verified Android packages directly to phones, tablets, or emulators over encrypted TLS 1.3 connections without proprietary app stores.
+              {/* Core Explanatory Sections */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-[#49454F] dark:text-[#CAC4D0]">
+                <div className="space-y-2">
+                  <h2 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                    <Globe2 className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF]" />
+                    <span>What is AVANYX Store?</span>
+                  </h2>
+                  <p className="leading-relaxed">
+                    AVANYX Store is an independent Android application marketplace and software publishing platform. It serves as a secure distribution channel where mobile device users discover verified applications and independent creators publish native Android software packages without restrictive store monopolies or aggressive tracking layers.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
-                  <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF]" />
-                    <span>CyberShield Security</span>
-                  </div>
-                  <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
-                    Every package is scanned through automated bytecode decompilation, sandbox runtime execution, and NIST FIPS 180-4 SHA-256 integrity hashing.
+                <div className="space-y-2">
+                  <h2 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                    <Search className="w-4 h-4 text-emerald-500" />
+                    <span>How Android App Discovery Works</span>
+                  </h2>
+                  <p className="leading-relaxed">
+                    Users can browse software categories including Games, Productivity, Developer Tools, and Education, or execute direct keyword searches. Each app profile transparently lists the compiled package name, release version, file size, developer credentials, and cryptographic SHA-256 hash before downloading.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
-                  <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
-                    <GraduationCap className="w-4 h-4 text-indigo-500" />
-                    <span>Creator Publishing Hub</span>
-                  </div>
-                  <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
-                    Indie developers publish with 0% platform commission via the Developer Console. Enrolled students publish academic projects via the Student Console.
+                <div className="space-y-2">
+                  <h2 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-indigo-500" />
+                    <span>How Developers Publish Apps</span>
+                  </h2>
+                  <p className="leading-relaxed">
+                    Verified publishers access the <a href="/developer-console" onClick={(e) => { e.preventDefault(); setCurrentTab('DEV_CONSOLE'); }} className="text-[#6750A4] dark:text-[#D0BCFF] font-bold hover:underline">Developer Console</a> to upload compiled APK packages, set release notes, configure rollout stages, and monitor live telemetry. Applications retain 100% creator copyright with 0% platform commission on free and open-source binaries.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-purple-400" />
+                    <span>How App Verification Information is Presented</span>
+                  </h2>
+                  <p className="leading-relaxed">
+                    Prior to public availability, every uploaded binary undergoes static DEX bytecode inspection, sandbox runtime emulation, and permission profiling. Once audited, the verified status, permissions matrix, and SHA-256 checksum are displayed on the public app page so users can independently verify file integrity.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-amber-500" />
+                    <span>Security and Privacy Approach</span>
+                  </h2>
+                  <p className="leading-relaxed">
+                    AVANYX Store operates under a strict privacy-first principle. No behavioral tracking, advertising SDK injections, or device fingerprinting is permitted. All package downloads are served over encrypted TLS 1.3 connections directly from cloud edge nodes.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-base font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-cyan-500" />
+                    <span>Developer Console & Student Developer Program</span>
+                  </h2>
+                  <p className="leading-relaxed">
+                    Professional studios manage software via the <a href="/developer/apply" onClick={(e) => { e.preventDefault(); setCurrentTab('DEVELOPER_APPLY'); }} className="text-[#6750A4] dark:text-[#D0BCFF] font-bold hover:underline">Developer Application</a> portal. Enrolled secondary and university students receive free hosting quotas and verified academic badges through the <a href="/student/apply" onClick={(e) => { e.preventDefault(); setCurrentTab('STUDENT_APPLY'); }} className="text-indigo-500 font-bold hover:underline">Student Developer Program</a>.
                   </p>
                 </div>
               </div>
 
-              <div className="pt-2 flex flex-wrap items-center gap-3 text-xs font-bold text-[#6750A4] dark:text-[#D0BCFF]">
-                <button
-                  onClick={() => {
+              {/* Frequently Asked Questions */}
+              <div className="pt-6 border-t border-black/5 dark:border-white/5 space-y-4">
+                <h2 className="text-lg font-black text-[#1D1B20] dark:text-white">
+                  Frequently Asked Questions About AVANYX Store
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-[#49454F] dark:text-[#CAC4D0]">
+                  <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                    <h3 className="font-extrabold text-[#1D1B20] dark:text-white">Can I download Android apps without creating an account?</h3>
+                    <p className="leading-relaxed">
+                      Yes. AVANYX Store allows guest users to freely search, browse, and download verified Android APK packages directly without requiring an account or sign-in.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                    <h3 className="font-extrabold text-[#1D1B20] dark:text-white">What is an APK file and how do I install it?</h3>
+                    <p className="leading-relaxed">
+                      An APK (Android Package) is the standard package file format used by Android to distribute mobile applications. To install, download the verified APK file from AVANYX Store and tap it on your Android device to install.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                    <h3 className="font-extrabold text-[#1D1B20] dark:text-white">How much does it cost developers to publish free apps?</h3>
+                    <p className="leading-relaxed">
+                      Zero. AVANYX Store charges 0% platform commission on free and open-source applications, with no recurring developer membership charges or listing fees.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                    <h3 className="font-extrabold text-[#1D1B20] dark:text-white">How does AVANYX Store check APK package integrity?</h3>
+                    <p className="leading-relaxed">
+                      AVANYX Store calculates and validates a cryptographic SHA-256 hash checksum for every package release according to the NIST FIPS 180-4 standard, ensuring binary code integrity.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contextual Internal Links */}
+              <div className="pt-4 border-t border-black/5 dark:border-white/5 flex flex-wrap items-center gap-3 text-xs font-bold text-[#6750A4] dark:text-[#D0BCFF]">
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    e.preventDefault();
                     setCurrentTab('INTRO');
                     if (typeof window !== 'undefined' && window.history && window.history.pushState) {
                       window.history.pushState({}, '', '/about');
@@ -603,12 +712,14 @@ export const HomeScreen: React.FC = () => {
                   }}
                   className="hover:underline flex items-center gap-1"
                 >
-                  <span>Learn More About AVANYX</span>
+                  <span>About AVANYX Store</span>
                   <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                </a>
                 <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                <button
-                  onClick={() => {
+                <a
+                  href="/faq"
+                  onClick={(e) => {
+                    e.preventDefault();
                     setCurrentTab('INTRO');
                     if (typeof window !== 'undefined' && window.history && window.history.pushState) {
                       window.history.pushState({}, '', '/faq');
@@ -616,11 +727,67 @@ export const HomeScreen: React.FC = () => {
                   }}
                   className="hover:underline"
                 >
-                  Knowledge Base (FAQ)
-                </button>
+                  Knowledge Base & FAQs
+                </a>
+                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                <a
+                  href="/developer-console"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentTab('DEV_CONSOLE');
+                    if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                      window.history.pushState({}, '', '/developer-console');
+                    }
+                  }}
+                  className="hover:underline"
+                >
+                  Developer Console
+                </a>
+                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                <a
+                  href="/student-console"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentTab('STUDENT_CONSOLE');
+                    if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                      window.history.pushState({}, '', '/student-console');
+                    }
+                  }}
+                  className="hover:underline"
+                >
+                  Student Console
+                </a>
+                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                <a
+                  href="/developer/apply"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentTab('DEVELOPER_APPLY');
+                    if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                      window.history.pushState({}, '', '/developer/apply');
+                    }
+                  }}
+                  className="hover:underline"
+                >
+                  Apply for Developer
+                </a>
+                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                <a
+                  href="/student/apply"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentTab('STUDENT_APPLY');
+                    if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                      window.history.pushState({}, '', '/student/apply');
+                    }
+                  }}
+                  className="hover:underline"
+                >
+                  Student Grants
+                </a>
                 <span className="text-zinc-300 dark:text-zinc-700">•</span>
                 <a href="/site.webmanifest" className="hover:underline">
-                  PWA Manifest
+                  PWA Web Manifest
                 </a>
               </div>
             </div>

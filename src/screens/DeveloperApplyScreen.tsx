@@ -35,7 +35,8 @@ import {
   Check,
   AlertTriangle,
   Share2,
-  LogIn
+  LogIn,
+  Users
 } from 'lucide-react';
 import {
   uploadProfileLogo,
@@ -761,46 +762,7 @@ export const DeveloperApplyScreen: React.FC<DeveloperApplyScreenProps> = ({ onBa
     }
   };
 
-  // PART B: Login Required Before Apply Gate
-  if (!isAuthenticated) {
-    return (
-      <div className="max-w-xl mx-auto my-12 p-8 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 shadow-2xl text-center space-y-6">
-        <div className="w-16 h-16 rounded-3xl bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] mx-auto flex items-center justify-center shadow-lg shadow-[#6750A4]/10">
-          <Lock className="w-8 h-8" />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-black text-[#1D1B20] dark:text-white">Sign In Required</h2>
-          <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] max-w-md mx-auto leading-relaxed">
-            You must be logged in to apply for the Verified Developer Program. Your account email will be automatically linked and verified.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <button
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                sessionStorage.setItem('avanyx_login_return_to', '/developer/apply');
-              }
-              setCurrentTab('LOGIN');
-              if (typeof window !== 'undefined' && window.history && window.history.pushState) {
-                window.history.pushState({}, '', '/login');
-              }
-            }}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#6750A4] hover:bg-[#523e85] text-white font-black text-xs shadow-lg shadow-[#6750A4]/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-          >
-            <LogIn className="w-4 h-4" />
-            <span>Sign In to Continue</span>
-          </button>
-          <button
-            onClick={handleReturn}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-black/5 dark:bg-white/5 font-bold text-xs text-[#1D1B20] dark:text-white hover:bg-black/10 transition-all"
-          >
-            Back to Store
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+  // PART B: Login Required Before Apply Gate is handled inline below hero
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-16 selection:bg-[#6750A4]/20 selection:text-[#6750A4]">
       {/* Top App Bar Navigation */}
@@ -830,11 +792,11 @@ export const DeveloperApplyScreen: React.FC<DeveloperApplyScreenProps> = ({ onBa
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Verified Developer Application</h1>
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Apply for AVANYX Developer Verification & Android App Publishing</h1>
                 <BadgeCheck className="w-6 h-6 text-[#D0BCFF]" />
               </div>
               <p className="text-xs text-zinc-300 mt-1 max-w-xl">
-                Official AVANYX Store verification program for publishers aged 18 and older. Native APK releases, paid monetization, and internal storage isolation.
+                The AVANYX Developer Program allows software publishers and indie creators aged 18+ to distribute Android APK packages worldwide with 0% platform commission on free applications and cryptographic SHA-256 verification.
               </p>
             </div>
           </div>
@@ -879,7 +841,44 @@ export const DeveloperApplyScreen: React.FC<DeveloperApplyScreenProps> = ({ onBa
         </div>
       </div>
 
-      {/* Top Application Mode Selector */}
+      {!isAuthenticated ? (
+        <div className="p-8 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 shadow-2xl text-center space-y-6">
+          <div className="w-16 h-16 rounded-3xl bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] mx-auto flex items-center justify-center shadow-lg shadow-[#6750A4]/10">
+            <Lock className="w-8 h-8" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-[#1D1B20] dark:text-white">Sign In Required to Submit Application</h2>
+            <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] max-w-md mx-auto leading-relaxed">
+              You must be logged in with your AVANYX account to apply for the Verified Developer Program. Your account email will be automatically linked and verified for publisher authorization.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  sessionStorage.setItem('avanyx_login_return_to', '/developer/apply');
+                }
+                setCurrentTab('LOGIN');
+                if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                  window.history.pushState({}, '', '/login');
+                }
+              }}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#6750A4] hover:bg-[#523e85] text-white font-black text-xs shadow-lg shadow-[#6750A4]/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Sign In to Continue Application</span>
+            </button>
+            <button
+              onClick={handleReturn}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-black/5 dark:bg-white/5 font-bold text-xs text-[#1D1B20] dark:text-white hover:bg-black/10 transition-all"
+            >
+              Back to Store
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Top Application Mode Selector */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-2 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 gap-2">
         <div className="flex items-center gap-2">
           <button
@@ -1813,82 +1812,212 @@ export const DeveloperApplyScreen: React.FC<DeveloperApplyScreenProps> = ({ onBa
         )}
         </>
       )}
+        </>
+      )}
 
       {/* Developer Verification Handbook, Program Guidelines & FAQs */}
       <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
-        <div className="p-8 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 shadow-xl space-y-6">
-          <div className="max-w-2xl space-y-1.5">
+        <div className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-[#1E1F23] border border-black/5 dark:border-white/5 shadow-xl space-y-8">
+          <div className="max-w-3xl space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6750A4]/15 text-[#6750A4] dark:text-[#D0BCFF] text-xs font-black uppercase">
               <Terminal className="w-3.5 h-3.5" />
-              <span>Publisher Handbook</span>
+              <span>Publisher Guidelines & Reference</span>
             </div>
-            <h2 className="text-xl font-black text-[#1D1B20] dark:text-white">
-              Developer Eligibility, Verification Standards & Guidelines
+            <h2 className="text-xl sm:text-2xl font-black text-[#1D1B20] dark:text-white">
+              Developer Eligibility, Verification Standards & Publishing Reference
             </h2>
-            <p className="text-xs text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
-              Everything you need to know about publishing on AVANYX Store, platform standards, and identity verification.
+            <p className="text-xs sm:text-sm text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
+              Complete documentation on who qualifies, required documentation, binary verification, review timelines, and creator rights on AVANYX Store.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
-              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Eligibility Requirements</span>
-              </div>
-              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
-                <li>• Must be 18 years of age or older.</li>
-                <li>• Provide official government identity for KYC validation.</li>
-                <li>• Valid email and phone number for 2FA security.</li>
-                <li>• Agree to AVANYX Developer Distribution Agreement.</li>
-              </ul>
+          {/* Key Takeaways */}
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-[#6750A4]/10 via-[#F8F9FA] to-emerald-500/10 dark:from-[#221C35] dark:via-[#1E1F23] dark:to-[#122822] border border-[#6750A4]/20 space-y-3">
+            <div className="text-xs font-black text-[#6750A4] dark:text-[#D0BCFF] uppercase flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Developer Program Key Takeaways</span>
+            </div>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-[#49454F] dark:text-[#CAC4D0]">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span><strong>0% Commission:</strong> Creators retain 100% rights with 0% platform fee on all free and open-source applications.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span><strong>Age 18+ Verification:</strong> Applicants must be 18 years or older with valid government-issued ID validation.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span><strong>Cryptographic Signatures:</strong> Every uploaded APK is verified and assigned an immutable NIST FIPS 180-4 SHA-256 hash.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span><strong>Review SLA (24–48h):</strong> Automated identity checks process immediately; admin verification completes in 24 to 48 hours.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Factual Core Topics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-[#49454F] dark:text-[#CAC4D0]">
+            <div className="space-y-2">
+              <h3 className="text-sm font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Users className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF]" />
+                <span>Who the Developer Application is For</span>
+              </h3>
+              <p className="leading-relaxed">
+                The application is intended for independent Android software engineers, established mobile studios, open-source maintainers, and commercial publishers aged 18 and older. It grants verified access to publish applications directly to global mobile users through the AVANYX Store ecosystem.
+              </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
-              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-[#6750A4] dark:text-[#D0BCFF] shrink-0" />
-                <span>Review & SLA Timeline</span>
-              </div>
-              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
-                <li>• Automated identity check: Instant verification.</li>
-                <li>• Admin profile review: Within 24 to 48 hours.</li>
-                <li>• Draft applications saved for 30 days via token.</li>
-                <li>• Email and SMS status notifications upon approval.</li>
-              </ul>
+            <div className="space-y-2">
+              <h3 className="text-sm font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Layers className="w-4 h-4 text-emerald-500" />
+                <span>What Developers Can Submit</span>
+              </h3>
+              <p className="leading-relaxed">
+                Publishers can submit compiled Android APK packages (targeting Android 8.0 Oreo through Android 15), release change logs, feature screenshots, promotional banners, and category tags. Software types include utility tools, mobile games, productivity suites, and developer SDKs.
+              </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-2">
-              <div className="font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>Platform Rights & Fees</span>
-              </div>
-              <ul className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] space-y-1.5 leading-relaxed">
-                <li>• 0% commission on free and open-source software.</li>
-                <li>• 100% intellectual property rights retained by creator.</li>
-                <li>• Direct APK distribution with SHA-256 signing.</li>
-                <li>• Real-time download metrics and crash diagnostics.</li>
-              </ul>
+            <div className="space-y-2">
+              <h3 className="text-sm font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <FileCheck2 className="w-4 h-4 text-indigo-500" />
+                <span>What Information is Required to Apply</span>
+              </h3>
+              <p className="leading-relaxed">
+                Applicants must submit: (1) Full legal name and organization/studio title; (2) Operational contact email with OTP verification; (3) Mobile phone number with 2FA verification; (4) Physical address and country of residence; and (5) Valid government identity documentation for KYC compliance.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-purple-400" />
+                <span>What Verification Means</span>
+              </h3>
+              <p className="leading-relaxed">
+                Verification confirms creator legal accountability and guarantees software safety. Each publisher profile receives an official verified badge, and every compiled binary undergoes automated DEX bytecode decompilation, sandbox runtime analysis, and SHA-256 integrity validation before public catalog listing.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Clock className="w-4 h-4 text-amber-500" />
+                <span>What Happens After Submission</span>
+              </h3>
+              <p className="leading-relaxed">
+                Upon form submission, a unique Application Token is generated. Drafts remain securely saved for 30 days. The verification team reviews credentials within 24 to 48 hours. Upon approval, your account role transitions to Verified Developer, unlocking full access to the <a href="/developer-console" onClick={(e) => { e.preventDefault(); setCurrentTab('DEV_CONSOLE'); }} className="text-[#6750A4] dark:text-[#D0BCFF] font-bold hover:underline">Developer Console</a>.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-extrabold text-[#1D1B20] dark:text-white flex items-center gap-2">
+                <Lock className="w-4 h-4 text-cyan-500" />
+                <span>Data Security & RFC 9116 Policy</span>
+              </h3>
+              <p className="leading-relaxed">
+                Submitted identity documents are stored in encrypted buckets with restricted administrative access. AVANYX adheres to RFC 9116 vulnerability reporting standards. Learn more by inspecting our public <a href="/security.txt" className="text-[#6750A4] dark:text-[#D0BCFF] font-bold hover:underline">security.txt</a> policy.
+              </p>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-black/5 dark:border-white/5 space-y-3">
-            <h3 className="font-extrabold text-sm text-[#1D1B20] dark:text-white">
-              Developer Frequently Asked Questions
+          {/* Frequently Asked Questions */}
+          <div className="pt-6 border-t border-black/5 dark:border-white/5 space-y-4">
+            <h3 className="font-extrabold text-base text-[#1D1B20] dark:text-white">
+              Developer Application Frequently Asked Questions
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1">
-                <strong className="text-[#1D1B20] dark:text-white block font-bold">Can I publish Android apps under a studio name?</strong>
-                <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
-                  Yes, you can register as an independent developer or enter your official studio/organization name. Both will appear with verified status on store listings.
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-[#49454F] dark:text-[#CAC4D0]">
+              <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                <h4 className="font-extrabold text-[#1D1B20] dark:text-white">Can I publish Android apps under a studio or brand name?</h4>
+                <p className="leading-relaxed">
+                  Yes. You can enter an organization or studio name in the application. Once approved, your studio name will be displayed as the verified publisher across all published store listings.
                 </p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1">
-                <strong className="text-[#1D1B20] dark:text-white block font-bold">What happens if my application draft expires?</strong>
-                <p className="text-[11px] text-[#49454F] dark:text-[#CAC4D0] leading-relaxed">
-                  Drafts are saved securely for 30 days using your unique Application Token. You can resume anytime using the &quot;Resume Existing Application&quot; button above.
+
+              <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                <h4 className="font-extrabold text-[#1D1B20] dark:text-white">What happens if my application draft is interrupted?</h4>
+                <p className="leading-relaxed">
+                  Your draft is saved securely in Firestore for 30 days. You can use your Application Token to resume editing anytime by selecting &quot;Resume Existing Application&quot; at the top of this screen.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                <h4 className="font-extrabold text-[#1D1B20] dark:text-white">Does AVANYX Store take any commission on free software?</h4>
+                <p className="leading-relaxed">
+                  No. AVANYX Store charges 0% platform commission on free and open-source applications. You retain 100% intellectual property ownership and full distribution autonomy.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#25262B] border border-black/5 dark:border-white/5 space-y-1.5">
+                <h4 className="font-extrabold text-[#1D1B20] dark:text-white">How does AutoSEO optimize my published apps?</h4>
+                <p className="leading-relaxed">
+                  The built-in AutoSEOEngine automatically extracts your package name, version, and tags to generate Schema.org SoftwareApplication JSON-LD schemas and OpenGraph cards for immediate search indexing.
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Contextual Internal Links */}
+          <div className="pt-4 border-t border-black/5 dark:border-white/5 flex flex-wrap items-center gap-3 text-xs font-bold text-[#6750A4] dark:text-[#D0BCFF]">
+            <a
+              href="/developer-console"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('DEV_CONSOLE');
+                if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                  window.history.pushState({}, '', '/developer-console');
+                }
+              }}
+              className="hover:underline flex items-center gap-1"
+            >
+              <span>Developer Console</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+            <span className="text-zinc-300 dark:text-zinc-700">•</span>
+            <a
+              href="/store"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('HOME');
+                if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                  window.history.pushState({}, '', '/store');
+                }
+              }}
+              className="hover:underline"
+            >
+              Store Marketplace
+            </a>
+            <span className="text-zinc-300 dark:text-zinc-700">•</span>
+            <a
+              href="/student/apply"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('STUDENT_APPLY');
+                if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                  window.history.pushState({}, '', '/student/apply');
+                }
+              }}
+              className="hover:underline text-indigo-500"
+            >
+              Student Publishing Program
+            </a>
+            <span className="text-zinc-300 dark:text-zinc-700">•</span>
+            <a
+              href="/faq"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('INTRO');
+                if (typeof window !== 'undefined' && window.history && window.history.pushState) {
+                  window.history.pushState({}, '', '/faq');
+                }
+              }}
+              className="hover:underline"
+            >
+              Publisher FAQs
+            </a>
+            <span className="text-zinc-300 dark:text-zinc-700">•</span>
+            <a href="/security.txt" className="hover:underline">
+              RFC 9116 Security Policy
+            </a>
           </div>
         </div>
       </div>

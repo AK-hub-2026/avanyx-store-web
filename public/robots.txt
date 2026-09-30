@@ -3,6 +3,7 @@
 
 User-agent: *
 Allow: /
+Allow: /intro
 Allow: /store
 Allow: /developer-console
 Allow: /student-console

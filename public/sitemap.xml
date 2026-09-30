@@ -7,7 +7,15 @@
   <!-- Homepage / Intro Welcome Page -->
   <url>
     <loc>https://avanyxstore.org/</loc>
-    <lastmod>2026-09-21</lastmod>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Knowledge Hub / Intro Page -->
+  <url>
+    <loc>https://avanyxstore.org/intro</loc>
+    <lastmod>2026-09-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
