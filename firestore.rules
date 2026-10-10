@@ -16,8 +16,7 @@ service cloud.firestore {
              request.auth.token.email != null &&
              (request.auth.token.email.lower() == 'alok8881864873@gmail.com' ||
               request.auth.token.email.lower() == 'akshayakshay53122@gmail.com' ||
-              request.auth.token.email.lower() == 'alok.dev.360@gmail.com' ||
-              request.auth.token.email.lower().matches('.*admin.*@avanyx\\.store'));
+              request.auth.token.email.lower() == 'alok.dev.360@gmail.com');
     }
 
     function isAdmin() {
@@ -42,15 +41,6 @@ service cloud.firestore {
       );
     }
 
-    function isStudent() {
-      return isAuthenticated() && (
-        request.auth.token.role == 'STUDENT' ||
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-         (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'STUDENT' ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.studentStatus == 'VERIFIED'))
-      );
-    }
-
     // 1. Users collection (Private user records - readable ONLY by account owner or authorized Admins)
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin() || isPrimaryAdmin();
@@ -61,15 +51,13 @@ service cloud.firestore {
           !request.resource.data.keys().hasAny([
             'role', 'realRole', 'adminStatus', 'developerStatus', 'studentStatus', 'verificationBadge', 'verifiedDeveloper', 'isDeveloper', 'isStudent', 'verified'
           ]) ||
-          (
-            (!('role' in request.resource.data) || request.resource.data.role == 'USER') &&
-            (!('realRole' in request.resource.data) || request.resource.data.realRole == 'USER') &&
-            (!('adminStatus' in request.resource.data) || request.resource.data.adminStatus == 'NONE') &&
-            (!('developerStatus' in request.resource.data) || request.resource.data.developerStatus in ['NONE', 'UNVERIFIED', 'PENDING', 'PENDING_REVIEW']) &&
-            (!('studentStatus' in request.resource.data) || request.resource.data.studentStatus in ['NONE', 'UNVERIFIED', 'PENDING', 'PENDING_REVIEW']) &&
-            (!('verificationBadge' in request.resource.data) || request.resource.data.verificationBadge == 'NONE') &&
-            (!('verifiedDeveloper' in request.resource.data) || request.resource.data.verifiedDeveloper == false)
-          )
+          (request.resource.data.role == 'USER' &&
+           (!('realRole' in request.resource.data) || request.resource.data.realRole == 'USER') &&
+           (!('adminStatus' in request.resource.data) || request.resource.data.adminStatus == 'NONE') &&
+           (!('developerStatus' in request.resource.data) || request.resource.data.developerStatus == 'NONE' || request.resource.data.developerStatus == 'UNVERIFIED') &&
+           (!('studentStatus' in request.resource.data) || request.resource.data.studentStatus == 'NONE' || request.resource.data.studentStatus == 'UNVERIFIED') &&
+           (!('verificationBadge' in request.resource.data) || request.resource.data.verificationBadge == 'NONE') &&
+           (!('verifiedDeveloper' in request.resource.data) || request.resource.data.verifiedDeveloper == false))
         )
       );
       
@@ -77,32 +65,14 @@ service cloud.firestore {
       allow update: if isPrimaryAdmin() || (
         isOwner(userId) && (
           isAdmin() ||
-          (
-            !request.resource.data.diff(resource.data).affectedKeys().hasAny([
-              'role', 'realRole', 'adminStatus', 'verificationBadge', 'verifiedDeveloper', 'isDeveloper', 'isStudent', 'verified', 'verificationStatus'
-            ]) &&
-            (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['developerStatus']) || 
-             request.resource.data.developerStatus in ['PENDING_REVIEW', 'PENDING', 'NONE', 'UNVERIFIED']) &&
-            (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['studentStatus']) || 
-             request.resource.data.studentStatus in ['PENDING_REVIEW', 'PENDING', 'NONE', 'UNVERIFIED'])
-          )
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'role', 'realRole', 'adminStatus', 'developerStatus', 'studentStatus', 'verificationBadge', 'verifiedDeveloper', 'isDeveloper', 'isStudent', 'verified', 'verificationStatus'
+          ])
         )
       );
       
       // Delete: Users can delete their own account only if they are not an ADMIN. Admins cannot be self-deleted.
       allow delete: if (isOwner(userId) && (!('role' in resource.data) || resource.data.role != 'ADMIN')) || isPrimaryAdmin();
-
-      // Nested User Device Sessions subcollection (users/{userId}/sessions/{sessionId})
-      match /sessions/{sessionId} {
-        allow read: if isOwner(userId) || isPrimaryAdmin() || isAdmin();
-        allow create, update, delete: if isOwner(userId) || isPrimaryAdmin() || isAdmin();
-      }
-
-      // Nested User Connected Apps subcollection (users/{userId}/connected_apps/{appId})
-      match /connected_apps/{appId} {
-        allow read: if isOwner(userId) || isPrimaryAdmin() || isAdmin();
-        allow create, update, delete: if isOwner(userId) || isPrimaryAdmin() || isAdmin();
-      }
     }
 
     // 2. Admins collection (Authoritative admin registry - writable ONLY by Primary Admins)
@@ -168,35 +138,16 @@ service cloud.firestore {
     // 4. Developer Applications collection (Private verification documents)
     match /developer_applications/{applicationId} {
       allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || applicationId == request.auth.uid));
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (applicationId == request.auth.uid || request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT']) &&
-        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes'])
-      );
+      allow create: if isAuthenticated() &&
+        applicationId == request.auth.uid &&
+        (request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes']);
       allow update: if isPrimaryAdmin() || isAdmin() || (
         isAuthenticated() &&
         (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || applicationId == request.auth.uid) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'applicantUid', 'userId']) &&
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT'])
-      );
-      allow delete: if isPrimaryAdmin();
-    }
-
-    // 4b. Live Developer Verifications collection (v3.4.2 Live Firestore standard)
-    match /developer_verifications/{docId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || docId == request.auth.uid));
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (docId == request.auth.uid || request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT']) &&
-        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes'])
-      );
-      allow update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || docId == request.auth.uid) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'applicantUid', 'userId']) &&
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT'])
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'status', 'applicantUid', 'userId'])
       );
       allow delete: if isPrimaryAdmin();
     }
@@ -204,17 +155,16 @@ service cloud.firestore {
     // 5. Developer Requests collection (alias)
     match /developer_requests/{requestId} {
       allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid));
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (requestId == request.auth.uid || request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT']) &&
-        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes'])
-      );
+      allow create: if isAuthenticated() &&
+        requestId == request.auth.uid &&
+        (request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes']);
       allow update: if isPrimaryAdmin() || isAdmin() || (
         isAuthenticated() &&
         (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'applicantUid', 'userId']) &&
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT'])
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'status', 'applicantUid', 'userId'])
       );
       allow delete: if isPrimaryAdmin();
     }
@@ -222,35 +172,16 @@ service cloud.firestore {
     // 6. Student Verification Requests collection (Private student documents)
     match /student_verification_requests/{requestId} {
       allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid));
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (requestId == request.auth.uid || request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT']) &&
-        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes'])
-      );
+      allow create: if isAuthenticated() &&
+        requestId == request.auth.uid &&
+        (request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes']);
       allow update: if isPrimaryAdmin() || isAdmin() || (
         isAuthenticated() &&
         (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'applicantUid', 'userId']) &&
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT'])
-      );
-      allow delete: if isPrimaryAdmin();
-    }
-
-    // 6b. Live Student Verifications collection (v3.4.2 Live Firestore standard)
-    match /student_verifications/{docId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || docId == request.auth.uid));
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (docId == request.auth.uid || request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT']) &&
-        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes'])
-      );
-      allow update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || docId == request.auth.uid) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'applicantUid', 'userId']) &&
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT'])
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'status', 'applicantUid', 'userId'])
       );
       allow delete: if isPrimaryAdmin();
     }
@@ -258,61 +189,47 @@ service cloud.firestore {
     // 7. Student Requests collection (alias)
     match /student_requests/{requestId} {
       allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid));
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (requestId == request.auth.uid || request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT']) &&
-        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes'])
-      );
+      allow create: if isAuthenticated() &&
+        requestId == request.auth.uid &&
+        (request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes']);
       allow update: if isPrimaryAdmin() || isAdmin() || (
         isAuthenticated() &&
         (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'applicantUid', 'userId']) &&
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT'])
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'status', 'applicantUid', 'userId'])
       );
       allow delete: if isPrimaryAdmin();
-    }
-
-    // 7b. Draft Applications (Live auto-save token recovery)
-    match /draft_applications/{token} {
-      allow read, create, update, delete: if true;
-    }
-
-    // 7c. User Drafts (By User ID and Type)
-    match /user_drafts/{draftId} {
-      allow read, create, update, delete: if true;
     }
 
     // 8. Verification Requests (unified alias)
     match /verification_requests/{requestId} {
       allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid));
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (requestId == request.auth.uid || request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT']) &&
-        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes'])
-      );
+      allow create: if isAuthenticated() &&
+        requestId == request.auth.uid &&
+        (request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.keys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes']);
       allow update: if isPrimaryAdmin() || isAdmin() || (
         isAuthenticated() &&
         (resource.data.applicantUid == request.auth.uid || resource.data.userId == request.auth.uid || requestId == request.auth.uid) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'applicantUid', 'userId']) &&
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || request.resource.data.status in ['PENDING_REVIEW', 'PENDING', 'DRAFT'])
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'PENDING') &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'reviewedByEmail', 'reviewerNotes', 'status', 'applicantUid', 'userId'])
       );
       allow delete: if isPrimaryAdmin();
     }
 
-    // 9. Security Audit Logs (Strict append-only immutable audit trail)
+    // 9. Security Audit Logs (Strict append-only immutable audit trail created by authorized admins)
     match /audit_logs/{logId} {
       allow read: if isPrimaryAdmin() || isAdmin();
-      allow create: if true;
+      allow create: if isPrimaryAdmin() || (
+        isAdmin() && (
+          request.resource.data.actorUid == request.auth.uid ||
+          request.resource.data.adminUid == request.auth.uid
+        )
+      );
       allow update, delete: if false;
-    }
-
-    // 9b. OTP Rate Limits (Phone OTP daily rate limiting in Firestore)
-    match /otp_rate_limits/{phoneId} {
-      allow read: if true;
-      allow create, update: if true;
-      allow delete: if isPrimaryAdmin() || isAdmin();
     }
 
     // 10. Admin Notifications (Internal alerts for moderation teams)
@@ -320,21 +237,66 @@ service cloud.firestore {
       allow read, update, delete: if isPrimaryAdmin() || isAdmin();
       allow create: if isPrimaryAdmin() || isAdmin() || (
         isAuthenticated() &&
-        (request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid || !('applicantUid' in request.resource.data)) &&
-        (!('type' in request.resource.data) || request.resource.data.type in ['DEVELOPER_VERIFICATION_REQUEST', 'STUDENT_VERIFICATION_REQUEST', 'APP_SUBMISSION']) &&
+        (request.resource.data.applicantUid == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
+        (request.resource.data.type == 'DEVELOPER_VERIFICATION_REQUEST' ||
+         request.resource.data.type == 'STUDENT_VERIFICATION_REQUEST' ||
+         request.resource.data.type == 'APP_SUBMISSION') &&
         (!('status' in request.resource.data) || request.resource.data.status == 'UNREAD')
       );
     }
 
-    // 11. Apps collection (Publicly browsable for all store apps)
+    // 11. Apps collection (Publicly browsable for PUBLISHED, developer reads own apps, admin reads all)
     match /apps/{appId} {
-      allow read: if true;
-      allow create: if true;
-      allow update: if isPrimaryAdmin() || isAdmin() || (
+      allow read: if (resource != null && resource.data.status == 'PUBLISHED') ||
+                     isAdmin() ||
+                     isPrimaryAdmin() ||
+                     (isAuthenticated() && resource != null && (resource.data.developerUid == request.auth.uid || resource.data.ownerUid == request.auth.uid));
+      allow create: if isPrimaryAdmin() || (
         isAuthenticated() &&
-        (resource.data.developerUid == request.auth.uid || resource.data.ownerUid == request.auth.uid)
+        isDeveloper() &&
+        (request.resource.data.developerUid == request.auth.uid || request.resource.data.ownerUid == request.auth.uid) &&
+        (request.resource.data.status == 'PENDING_REVIEW' || request.resource.data.status == 'DRAFT') &&
+        !request.resource.data.keys().hasAny([
+          'securityScore', 'rating', 'reviewCount', 'isFeatured', 'isTrending', 'reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'moderationNotes'
+        ])
       );
-      allow delete: if isPrimaryAdmin() || (isAuthenticated() && (resource.data.developerUid == request.auth.uid || resource.data.ownerUid == request.auth.uid));
+      allow update: if isPrimaryAdmin() || (
+        isAuthenticated() &&
+        isDeveloper() &&
+        (resource.data.developerUid == request.auth.uid || resource.data.ownerUid == request.auth.uid) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'ownerUid', 'developerUid', 'status', 'securityScore', 'rating', 'reviewCount', 'isFeatured', 'isTrending', 'reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'moderationNotes'
+        ])
+      ) || (
+        // Allow developer to resubmit a draft or rejected application for review
+        isAuthenticated() &&
+        isDeveloper() &&
+        (resource.data.developerUid == request.auth.uid || resource.data.ownerUid == request.auth.uid) &&
+        (resource.data.status == 'DRAFT' || resource.data.status == 'REJECTED') &&
+        request.resource.data.status == 'PENDING_REVIEW' &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'ownerUid', 'developerUid', 'securityScore', 'rating', 'reviewCount', 'isFeatured', 'isTrending', 'reviewedBy', 'reviewedAt', 'reviewedByAdminUid', 'moderationNotes'
+        ])
+      );
+      allow delete: if isPrimaryAdmin() || (isAuthenticated() && isDeveloper() && (resource.data.developerUid == request.auth.uid || resource.data.ownerUid == request.auth.uid));
+
+      // In-App Products Catalog for Developer Apps (apps/{appId}/products/{productId})
+      match /products/{productId} {
+        allow read: if true;
+        allow write: if isPrimaryAdmin() || isAdmin() || (
+          isAuthenticated() && isDeveloper() && (
+            resource == null ||
+            resource.data.developerUid == request.auth.uid ||
+            resource.data.ownerUid == request.auth.uid
+          )
+        );
+      }
+    }
+
+    // Top-Level In-App Products Catalog Query
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isPrimaryAdmin() || isAdmin();
     }
 
     // 12. App Versions collection: public read, developer/admin write
@@ -358,39 +320,10 @@ service cloud.firestore {
       allow write: if true;
     }
 
-    // 14. Featured Banners: public read and administrative write
+    // 14. Featured Banners: public read and administrative/seed write
     match /featured_banners/{bannerId} {
       allow read: if true;
-      allow write: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 14b. Promotion Requests: Developers submit (status: PENDING), Admin review & approve
-    match /promotion_requests/{requestId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid);
-      allow create: if isAuthenticated() && (
-        isPrimaryAdmin() ||
-        isAdmin() ||
-        (request.resource.data.developerUid == request.auth.uid && request.resource.data.status == 'PENDING')
-      );
-      allow update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        resource.data.developerUid == request.auth.uid &&
-        resource.data.status == 'PENDING' &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'reviewedBy', 'reviewerNotes', 'priority', 'isActive'])
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid && resource.data.status == 'PENDING');
-    }
-
-    // 14c. Sponsored Apps: public read, admin managed
-    match /sponsored_apps/{sponsoredId} {
-      allow read: if true;
-      allow write: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 14d. Category Spotlights: public read, admin managed
-    match /category_spotlights/{spotlightId} {
-      allow read: if true;
-      allow write: if isPrimaryAdmin() || isAdmin();
+      allow write: if true;
     }
 
     // 15. Reviews: public read, authenticated user write own review, developers reply, admin moderate
@@ -427,20 +360,6 @@ service cloud.firestore {
       allow update, delete: if isPrimaryAdmin() || isAdmin();
     }
 
-    // 16d. Analytics Daily (Developer & store telemetry aggregates)
-    match /analytics_daily/{docId} {
-      allow read: if true;
-      allow create, update: if true;
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 16e. Analytics Country (Geographical analytics telemetry aggregates)
-    match /analytics_country/{docId} {
-      allow read: if true;
-      allow create, update: if true;
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
     // 17. Wishlist: user private wishlist
     match /wishlist/{wishlistId} {
       allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin());
@@ -461,51 +380,33 @@ service cloud.firestore {
       allow update, delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isPrimaryAdmin() || isAdmin();
     }
 
-    // 18b. Verification Notifications (Live Firestore verification status and system alerts)
-    match /verification_notifications/{notifId} {
-      allow read: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid ||
-        resource.data.applicantUid == request.auth.uid ||
-        resource.data.userId == 'ALL' ||
-        !('userId' in resource.data) ||
-        isPrimaryAdmin() ||
-        isAdmin()
-      );
-      allow create: if isAuthenticated() || isPrimaryAdmin() || isAdmin();
-      allow update, delete: if (isAuthenticated() && (resource.data.userId == request.auth.uid || resource.data.applicantUid == request.auth.uid)) || isPrimaryAdmin() || isAdmin();
-    }
-
     // 19. Store Settings: public read, admin write
     match /settings/{settingId} {
       allow read: if true;
       allow write: if isPrimaryAdmin() || isAdmin();
     }
 
-    // 20. AVANYX Identity - User Device Sessions (Root fallback & collection-group compatibility)
+    // 20. AVANYX Identity - User Device Sessions (Strict Privacy: Users access only their own sessions; Admins cannot view)
     match /sessions/{sessionId} {
       allow read: if isAuthenticated() && (
-        resource == null || resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin()
+        resource == null || resource.data.userId == request.auth.uid
       );
-      allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
-        request.resource.data.userId == request.auth.uid ||
-        isPrimaryAdmin() ||
-        isAdmin()
+        request.resource.data.userId == request.auth.uid
       );
     }
 
-    // 21. AVANYX Identity - Connected Apps (Root fallback & collection-group compatibility)
+    // 21. AVANYX Identity - Connected Apps (User grants/revocations)
     match /connected_apps/{appId} {
       allow read: if isAuthenticated() && (
-        resource == null || resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin()
+        resource == null || resource.data.userId == request.auth.uid
       );
-      allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
-        request.resource.data.userId == request.auth.uid ||
-        isPrimaryAdmin() ||
-        isAdmin()
+        request.resource.data.userId == request.auth.uid
       );
     }
 
@@ -516,248 +417,46 @@ service cloud.firestore {
       allow update, delete: if isPrimaryAdmin() || isAdmin();
     }
 
-    // 23. Private Verification & Public Asset Metadata (uploaded_files)
-    // Private verification documents (/private/verification/*) are readable ONLY by Admin Console or account owner.
-    match /uploaded_files/{fileId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || 
-                  (resource != null && resource.data.isPrivate == false) || 
-                  (isAuthenticated() && resource != null && (resource.data.ownerUid == request.auth.uid || resource.data.uploadedByUid == request.auth.uid));
-      allow create: if isAuthenticated() || isPrimaryAdmin() || isAdmin();
-      allow update, delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 24. Payment Settings (Public read so payment screens load dynamic QR, Admin managed)
-    match /payment_settings/{settingId} {
-      allow read: if true;
-      allow write: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 25. Coupon Codes (Read by authenticated users to validate, Admin managed)
-    match /coupon_codes/{codeId} {
-      allow read: if isAuthenticated() || isPrimaryAdmin() || isAdmin();
-      allow create, delete: if isPrimaryAdmin() || isAdmin();
-      // Allow atomic usage tracking on redemption by authenticated developers
-      allow update: if isAuthenticated();
-    }
-
-    // 26. Payments collection (Payment verification flow, immutable audit, Admin review)
-    match /payments/{paymentId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid));
-      allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin());
-      allow update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && resource.data.userId == request.auth.uid &&
-        resource.data.status in ['DRAFT', 'PAYMENT_PENDING', 'REQUEST_PROOF']
-      );
-      allow delete: if isPrimaryAdmin();
-    }
-
-    // 27. Billing Products (In-App Products & Subscriptions published with stable immutable productId)
-    match /products/{productId} {
-      allow read: if true;
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (isDeveloper() || isStudent()) && request.resource.data.developerUid == request.auth.uid
-      );
-      allow update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (isDeveloper() || isStudent()) && resource.data.developerUid == request.auth.uid &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['productId', 'id', 'developerUid', 'createdAt'])
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (isDeveloper() || isStudent()) && resource.data.developerUid == request.auth.uid);
-    }
-
-    // 28. Billing Purchases (Live transactions generated by AVANYX.purchase())
+    // 23. AVANYX Pay Purchases (Purchase history synced with Firestore)
     match /purchases/{purchaseId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.userUid == request.auth.uid ||
-          resource.data.userId == request.auth.uid ||
-          resource.data.developerUid == request.auth.uid
-        )
-      );
-      allow create: if isAuthenticated() && (
-        request.resource.data.userUid == request.auth.uid ||
-        request.resource.data.userId == request.auth.uid ||
-        isPrimaryAdmin() ||
-        isAdmin()
-      );
-      allow update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() &&
-        (resource.data.userUid == request.auth.uid || resource.data.userId == request.auth.uid) &&
-        resource.data.paymentStatus in ['PENDING_VERIFICATION', 'FAILED', 'CANCELLED']
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 29. Subscriptions (Active and recurring subscriptions)
-    match /subscriptions/{subId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.userUid == request.auth.uid ||
-          resource.data.developerUid == request.auth.uid
-        )
-      );
-      allow create, update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          request.resource.data.userUid == request.auth.uid ||
-          (resource != null && resource.data.userUid == request.auth.uid)
-        )
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 30. Purchase Notifications (Customer & Developer billing alerts)
-    match /purchase_notifications/{notifId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.userUid == request.auth.uid ||
-          resource.data.userId == request.auth.uid
-        )
-      );
-      allow create: if isAuthenticated() || isPrimaryAdmin() || isAdmin();
-      allow update, delete: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource.data.userUid == request.auth.uid ||
-          resource.data.userId == request.auth.uid
-        )
-      );
-    }
-
-    // 31. Subscription Plans (Recurring subscription plans published by developers & student creators)
-    match /subscription_plans/{planId} {
       allow read: if true;
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (isDeveloper() || isStudent()) && request.resource.data.developerUid == request.auth.uid
-      );
-      allow update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (isDeveloper() || isStudent()) && resource.data.developerUid == request.auth.uid &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['planId', 'id', 'developerUid', 'createdAt'])
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (isDeveloper() || isStudent()) && resource.data.developerUid == request.auth.uid);
-    }
-
-    // 32. Developer Payouts (Withdrawal requests and settlements - Locked for Students)
-    match /developer_payouts/{payoutId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.developerUid == request.auth.uid
-        )
-      );
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && isDeveloper() && !isStudent() && request.resource.data.developerUid == request.auth.uid
-      );
-      allow update: if isPrimaryAdmin() || isAdmin();
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 33. Payout Settings (Saved developer withdrawal destination)
-    match /payout_settings/{devId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (devId == request.auth.uid || (resource != null && resource.data.developerUid == request.auth.uid))
-      );
-      allow create, update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (devId == request.auth.uid || request.resource.data.developerUid == request.auth.uid)
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 34. Commission Settings (v3.7.2 PART C: App Sale, In-App, Subscriptions, Promotions)
-    match /commission_settings/{settingId} {
-      allow read: if true;
-      allow create, update: if isPrimaryAdmin() || isAdmin();
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 35. Download Analytics (v3.7.2 PART E: Downloads, Installs, Updates, Failed, Speed, Country, Android Version)
-    match /download_analytics/{eventId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.developerUid == request.auth.uid ||
-          resource.data.userId == request.auth.uid
-        )
-      );
       allow create: if true;
       allow update, delete: if isPrimaryAdmin() || isAdmin();
     }
 
-    // 36. Reward Accounts (v3.7.2 PART F: Points balance, tiers, active membership - No Wallet)
-    match /reward_accounts/{userId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          userId == request.auth.uid ||
-          (resource != null && resource.data.userId == request.auth.uid)
-        )
-      );
-      allow create, update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          userId == request.auth.uid ||
-          request.resource.data.userId == request.auth.uid
-        )
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin();
+    // 25. Announcements (Android READ ONLY)
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if isPrimaryAdmin() || isAdmin();
     }
 
-    // 37. Reward History (v3.7.2 PART F: Festival, referral, download, developer milestone events)
+    // 26. Rewards Catalog (Android READ ONLY)
+    match /rewards/{rewardId} {
+      allow read: if true;
+      allow write: if isPrimaryAdmin() || isAdmin();
+    }
+
+    // 27. Reward History (Android user READ own and WRITE own claim)
     match /reward_history/{historyId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.userId == request.auth.uid
-        )
+      allow read: if isAuthenticated() && (
+        resource == null || resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin()
       );
-      allow create: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          request.resource.data.userId == request.auth.uid
-        )
+      allow create: if isAuthenticated() && (
+        request.resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin()
       );
       allow update, delete: if isPrimaryAdmin() || isAdmin();
     }
 
-    // 38. Coupon Balance (v3.7.2 PART F: User coupon codes and active balances)
-    match /coupon_balance/{couponId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.userId == request.auth.uid
-        )
+    // 28. Purchase Notifications (Android READ own, WRITE read status update)
+    match /purchase_notifications/{notifId} {
+      allow read: if isAuthenticated() && (
+        resource == null || resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin()
       );
-      allow create, update: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          request.resource.data.userId == request.auth.uid
-        )
-      );
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 39. Billing Audits (v3.7.2 PART G: Popup lifecycle diagnostics and step verification)
-    match /billing_audits/{auditId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (
-        isAuthenticated() && (
-          resource == null ||
-          resource.data.userUid == request.auth.uid ||
-          resource.data.userId == request.auth.uid
-        )
-      );
-      allow create, update: if true;
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 40. Developer API Keys (v3.7.3 PART G: Unique creator credentials)
-    match /developer_api_keys/{keyId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (keyId == request.auth.uid || (resource != null && resource.data.developerUid == request.auth.uid)));
-      allow create, update: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (keyId == request.auth.uid || request.resource.data.developerUid == request.auth.uid));
-      allow delete: if isPrimaryAdmin() || isAdmin();
-    }
-
-    // 41. Student API Keys (v3.7.3 PART G: Unique student creator credentials)
-    match /student_api_keys/{keyId} {
-      allow read: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (keyId == request.auth.uid || (resource != null && resource.data.studentUid == request.auth.uid)));
-      allow create, update: if isPrimaryAdmin() || isAdmin() || (isAuthenticated() && (keyId == request.auth.uid || request.resource.data.studentUid == request.auth.uid));
+      allow create: if isAuthenticated() || isPrimaryAdmin() || isAdmin();
+      allow update: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isPrimaryAdmin() || isAdmin()
+      ) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead', 'status', 'readAt']);
       allow delete: if isPrimaryAdmin() || isAdmin();
     }
   }
 }
-
